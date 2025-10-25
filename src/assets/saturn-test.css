@@ -672,8 +672,7 @@ li:before {
   transform: translateX(-400px) translateY(-100px) rotate(-20deg);
 }
 
-.move-center-enter-active,
-.move-center-leave-active {
+.move-center-enter-active {
   transition: all 0.8s ease;
 }
 

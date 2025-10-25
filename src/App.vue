@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { useThemeStore } from '@/stores/theme'
+import { useThemeStore } from '@/stores/themeStore'
 
 import TheFooter from './components/TheFooter.vue';
 // import TheNavigation from './components/TheNavigation.vue'

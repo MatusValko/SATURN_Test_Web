@@ -1,5 +1,5 @@
 <template>
-  <v-container class="text-center">
+  <v-container v-if="testStore.stage === 'intro'" class="text-center">
     <v-row align="center" justify="center">
       <v-col>
         <h1>SATURN Test</h1>
@@ -9,45 +9,13 @@
   </v-container>
 
   <v-container>
+    <TheIntro />
     <!-- INTRO STAGE -->
-    <v-row v-if="stage === 'intro'" justify="center" align="center">
-      <v-col cols="auto">
-        <transition name="fade-slide">
-          <div v-if="stage === 'intro'" class="saturn">
-            <img src="/src/assets/saturn.png" alt="Saturn" width="500" />
-          </div>
-        </transition>
-      </v-col>
-      <v-col cols="12" md="6">
-        <transition name="fade">
-          <v-card elevation="4" class="pa-6" rounded="lg">
-            <h3 class="mb-4">O teste:</h3>
-            <ul class="text-left">
-              <li>Kognitívny screening test na hodnotenie pamäte, pozornosti a mentálnych funkcií</li>
-              <li>Trvá približne 10-15 minút</li>
-              <li>Maximálne skóre: 30 bodov</li>
-              <li>Test obsahuje úlohy na pamäť, orientáciu, výpočty, pozornosť a vizuospatiálne funkcie</li>
-              <li>Vyplňuje sa samostatne bez pomoci administrátora</li>
-            </ul>
 
-            <v-alert type="warning" variant="tonal" class="mt-4">
-              <strong>⚠️ Dôležité upozornenie:</strong> Tento test slúži len na informatívne účely a screeningové
-              použitie.
-              Nemôže nahradiť odbornú lekársku diagnózu. Pri akýchkoľvek obavách týkajúcich sa kognitívnych funkcií sa
-              obráťte na lekára.
-            </v-alert>
-
-            <v-btn color="primary" size="large" block class="mt-4" @click="startTest">
-              Začať test
-            </v-btn>
-          </v-card>
-        </transition>
-      </v-col>
-    </v-row>
 
     <!-- MEMORIZE STAGE -->
     <transition name="move-center">
-      <v-container v-if="stage === 'memorize'" class="memorize-container">
+      <v-container v-if="testStore.stage === 'memorize'" class="memorize-container">
         <v-card elevation="6" class="pa-8" rounded="lg">
           <h2 class="mb-6">Fáza zapamätania</h2>
 
@@ -89,7 +57,7 @@
 
     <!-- TEST STAGE -->
     <transition name="move-center">
-      <v-container v-if="stage === 'test'">
+      <v-container v-if="testStore.stage === 'test'">
         <!-- Header info -->
         <v-card elevation="2" class="mb-4 pa-4" rounded="lg">
           <v-row align="center">
@@ -339,7 +307,7 @@
 
     <!-- RESULTS STAGE -->
     <transition name="move-center">
-      <v-container v-if="stage === 'results'">
+      <v-container v-if="testStore.stage === 'results'">
         <v-card elevation="8" class="pa-8" rounded="lg">
           <h1 class="mb-4">🎉 Test dokončený!</h1>
           <p class="text-h6 mb-6">Gratulujeme, úspešne ste dokončili SATURN test</p>
@@ -412,14 +380,21 @@
 
 
 <script>
+import TheIntro from '@/components/TheIntro.vue';
+import { useTestStore } from '@/stores/testStore';
+
 // import { useThemeStore } from '@/stores/theme'
 
 
 export default {
   name: 'HomeView',
+  components: {
+    TheIntro,
+  },
   data() {
     return {
-      stage: 'intro',
+      testStore: useTestStore(),
+      // stage: 'intro',
       currentTask: 0,
       score: 0,
       timeSpent: 0,
@@ -652,14 +627,14 @@ export default {
       this.nextTask();
     },
 
-    startTest() {
-      this.stage = 'memorize';
-    },
+    // startTest() {
+    //   this.stage = 'memorize';
+    // },
 
     selectShape(shape) {
       this.selectedShape = shape;
       this.initializeTasks();
-      this.stage = 'test';
+      this.testStore.stage = 'test';
       this.startTime = Date.now();
       this.timerInterval = setInterval(() => {
         this.timeSpent = Math.floor((Date.now() - this.startTime) / 1000);
@@ -815,7 +790,7 @@ export default {
         this.currentTask++;
       } else {
         clearInterval(this.timerInterval);
-        this.stage = 'results';
+        this.testStore.stage = 'results';
       }
     },
 
@@ -826,7 +801,7 @@ export default {
     },
 
     resetTest() {
-      this.stage = 'intro';
+      this.testStore.stage = 'intro';
       this.currentTask = 0;
       this.score = 0;
       this.timeSpent = 0;
