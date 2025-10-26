@@ -1,23 +1,23 @@
 <template>
   <!-- TODO DAT NASPAT <v-container v-if="testStore.stage === 'intro'" class="text-center"> -->
-  <v-container class="text-center">
-
+  <!-- <v-container class="text-center"> -->
+  <div v-if="testStore.stage === 'intro'" class="text-center">
     <v-row align="center" justify="center">
       <v-col>
         <h1>SATURN Test</h1>
         <p class="subtitle">Self-Administered Tasks Uncovering Risk of Neurodegeneration</p>
-        <div v-if="testStore.developmentMode">
-          <p>{{ testStore.stage }}</p>
-          <p>{{ testStore.currentTaskData.type }}</p>
-          <p>Correct answer: {{ testStore.currentTaskData.correct }}</p>
-          <p>Current answer: {{ testStore.currentAnswer }}</p>
-
-
-        </div>
       </v-col>
     </v-row>
+  </div>
+  <!-- </v-container> -->
+  <v-container>
+    <div v-if="testStore.developmentMode">
+      <p>{{ testStore.stage }}</p>
+      <p>{{ testStore.currentTaskData.type }}</p>
+      <p>Correct answer: {{ testStore.currentTaskData.correct }}</p>
+      <p>Current answer: {{ testStore.currentAnswer }}</p>
+    </div>
   </v-container>
-
   <v-container>
     <!-- INTRO STAGE -->
     <TheIntro />
@@ -93,10 +93,88 @@
 
 
 
-
-
-
           <TheCircleSquareComponent />
+
+          <!--SELECT WORDS -->
+          <transition>
+            <v-container v-if="testStore.currentTaskData.type === 'select-words'">
+              <v-alert type="info" variant="tonal" class="mb-4" prominent>
+                <v-row align="center">
+                  <v-col>
+                    <div class="text-h6">
+                      Vybrané slová: {{ testStore.selectedWords.length }}
+                    </div>
+                  </v-col>
+                </v-row>
+              </v-alert>
+              <v-card elevation="2" class="pa-4" rounded="lg" style="max-height: 500px; overflow-y: auto;">
+                <v-row dense>
+                  <v-col v-for="word in testStore.currentTaskData.options" :key="word" cols="6" sm="4" md="3">
+                    <v-btn block size="small" :color="testStore.selectedWords.includes(word) ? 'secondary' : 'default'"
+                      :variant="testStore.selectedWords.includes(word) ? 'elevated' : 'outlined'"
+                      :disabled="testStore.answerSubmitted" @click="testStore.toggleWord(word)" class="text-caption"
+                      :class="{ 'selected-word': testStore.selectedWords.includes(word) }" rounded="lg">
+                      <v-icon v-if="testStore.selectedWords.includes(word)" size="small" class="mr-1">mdi-check</v-icon>
+                      {{ word }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-card>
+            </v-container>
+          </transition>
+
+          <!-- WORD RECALL -->
+          <div v-if="testStore.currentTaskData.type === 'word-recall'">
+            <v-alert type="info" variant="tonal" class="mb-4" prominent>
+              <v-row align="center">
+                <v-col>
+                  <div class="text-h6">
+                    Vybrané slová: {{ testStore.selectedWords.length }} /{{ testStore.currentTaskData.correct.length }}
+                  </div>
+                </v-col>
+                <v-col cols="auto">
+                  <v-progress-circular
+                    :model-value="(testStore.selectedWords.length / testStore.currentTaskData.correct.length) * 100"
+                    :size="60" :width="6" color="primary">
+                    {{ testStore.selectedWords.length }}
+                  </v-progress-circular>
+                </v-col>
+              </v-row>
+            </v-alert>
+
+            <v-card elevation="2" class="pa-4" rounded="lg" style="max-height: 500px; overflow-y: auto;">
+              <v-row dense>
+                <v-col v-for="word in testStore.currentTaskData.options" :key="word" cols="6" sm="4" md="3" lg="2">
+                  <v-btn block size="small" :color="testStore.selectedWords.includes(word) ? 'secondary' : 'default'"
+                    :variant="testStore.selectedWords.includes(word) ? 'elevated' : 'outlined'"
+                    :disabled="testStore.answerSubmitted" @click="testStore.toggleWord(word)" class="text-caption"
+                    :class="{ 'selected-word': testStore.selectedWords.includes(word) }" rounded="lg">
+                    <v-icon v-if="testStore.selectedWords.includes(word)" size="small" class="mr-1">mdi-check</v-icon>
+                    {{ word }}
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-card>
+          </div>
+
+          <!-- FIRST LETTER WORD/INSTRUCTION/SHAPE/ORIENTATION RECALL -->
+          <div
+            v-if="['instruction-recall', 'shape-recall', 'orientation', 'j-word'].includes(this.testStore.currentTaskDataType)">
+            <v-row>
+              <v-col v-for="option in testStore.currentTaskData.options" :key="option" cols="12" sm="6" md="2.4">
+                <v-btn block size="large" :color="testStore.currentAnswer === option ? 'primary' : 'default'"
+                  :variant="testStore.currentAnswer === option ? 'elevated' : 'outlined'"
+                  :disabled="testStore.answerSubmitted" @click="testStore.selectAnswer(option)" class="text-body-1 pa-6"
+                  :class="{ 'selected-answer': testStore.currentAnswer === option }" rounded="lg">
+                  <v-icon v-if="testStore.currentAnswer === option" class="mr-2">mdi-check-circle</v-icon>
+                  {{ option }}
+                </v-btn>
+              </v-col>
+            </v-row>
+          </div>
+
+
+
 
           <!-- NUMBER RECALL -->
           <transition>
@@ -143,7 +221,6 @@
 
           <!-- CALCULATION -->
           <transition>
-
             <div v-if="testStore.currentTaskDataType === 'calculation'">
               <v-row justify="center">
                 <v-col cols="12" sm="8" md="6">
@@ -182,54 +259,9 @@
             </div>
           </transition>
 
-          <!-- INSTRUCTION/SHAPE/ORIENTATION RECALL -->
-          <div
-            v-if="['instruction-recall', 'shape-recall', 'orientation'].includes(this.testStore.currentTaskDataType)">
-            <v-row>
-              <v-col v-for="option in testStore.currentTaskData.options" :key="option" cols="12" sm="6" md="4">
-                <v-btn block size="large" :color="currentAnswer === option ? 'primary' : 'default'"
-                  :variant="currentAnswer === option ? 'elevated' : 'outlined'" :disabled="answerSubmitted"
-                  @click="selectAnswer(option)" class="text-body-1 pa-6"
-                  :class="{ 'selected-answer': currentAnswer === option }" rounded="lg">
-                  <v-icon v-if="currentAnswer === option" class="mr-2">mdi-check-circle</v-icon>
-                  {{ option }}
-                </v-btn>
-              </v-col>
-            </v-row>
-          </div>
 
-          <!-- WORD RECALL -->
-          <!-- <div v-if="currentTaskData.type === 'word-recall'">
-            <v-alert type="info" variant="tonal" class="mb-4" prominent>
-              <v-row align="center">
-                <v-col>
-                  <div class="text-h6">
-                    Vybrané slová: {{ selectedWords.length }} / 5
-                  </div>
-                </v-col>
-                <v-col cols="auto">
-                  <v-progress-circular :model-value="(selectedWords.length / 5) * 100" :size="60" :width="6"
-                    color="primary">
-                    {{ selectedWords.length }}
-                  </v-progress-circular>
-                </v-col>
-              </v-row>
-            </v-alert>
 
-            <v-card elevation="2" class="pa-4" rounded="lg" style="max-height: 500px; overflow-y: auto;">
-              <v-row dense>
-                <v-col v-for="word in allWords" :key="word" cols="6" sm="4" md="3" lg="2">
-                  <v-btn block size="small" :color="selectedWords.includes(word) ? 'secondary' : 'default'"
-                    :variant="selectedWords.includes(word) ? 'elevated' : 'outlined'" :disabled="answerSubmitted"
-                    @click="toggleWord(word)" class="text-caption"
-                    :class="{ 'selected-word': selectedWords.includes(word) }" rounded="lg">
-                    <v-icon v-if="selectedWords.includes(word)" size="small" class="mr-1">mdi-check</v-icon>
-                    {{ word }}
-                  </v-btn>
-                </v-col>
-              </v-row>
-            </v-card>
-          </div> -->
+
 
           <!-- STROOP TEST -->
           <div v-if="testStore.currentTaskDataType === 'stroop'">

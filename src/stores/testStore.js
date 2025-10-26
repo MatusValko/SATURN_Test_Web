@@ -21,8 +21,9 @@ export const useTestStore = defineStore('test', {
     answerSubmitted: false,
     currentAnswer: null,
     count: 0,
-    instruction: 'Kliknite na štvorec aby ste pokračovali',
+    // instruction: 'Kliknite na štvorec aby ste pokračovali',
     displayNumber: '7294',
+    fruitsToSelect: ['BANÁN', 'POMARANČ'],
     wordsToMemorize: ['JABLKO', 'PERO', 'KRAVATA', 'DOM', 'AUTO'],
 
     stroopIndex: 0,
@@ -42,7 +43,7 @@ export const useTestStore = defineStore('test', {
 
     trailsSequence: [],
     shuffledTrails: [],
-
+    all4Words: ['BANÁN', 'KOSTOL', 'POMARANČ', 'SPONKA'],
     allWords: [
       'KRAVATA',
       'CHLIEB',
@@ -222,7 +223,14 @@ export const useTestStore = defineStore('test', {
       if (task.type === 'stroop') return false
 
       if (
-        ['instruction-recall', 'shape-recall', 'orientation', 'select-shape'].includes(task.type)
+        [
+          'instruction-recall',
+          'shape-recall',
+          'orientation',
+          'select-shape',
+          'j-word',
+          'select-words',
+        ].includes(task.type)
       ) {
         return state.currentAnswer !== null
       }
@@ -236,8 +244,14 @@ export const useTestStore = defineStore('test', {
       }
 
       if (task.type === 'word-recall') {
-        return state.selectedWords.length === 5
+        return state.selectedWords.length === task.correct.length
       }
+      // if (task.type === 'select-words') {
+      //   //if all selcted words are correct and the number of selected words matches the correct answers then return true
+      //   if (state.selectedWords.length === 0) {
+      //     return false
+      //   }
+      // }
 
       if (task.type === 'pattern') {
         return state.currentAnswer !== null
@@ -296,6 +310,20 @@ export const useTestStore = defineStore('test', {
           ],
           correct: this.correctShape,
           points: 1,
+        },
+        {
+          type: 'j-word',
+          question: 'Vyberte slovo, ktoré začína na písmeno J:',
+          options: ['Hrad', 'List', 'Ruka', 'Meno', 'Voda', 'Dážď', 'Jar', 'Kruh', 'Znak', 'Tvor'],
+          correct: 'Jar',
+          points: 1,
+        },
+        {
+          type: 'select-words',
+          question: 'Vyberte slová, ktoré označujú ovocie:',
+          options: this.all4Words,
+          correct: this.fruitsToSelect,
+          points: 2,
         },
         // {
         //   type: 'instruction-recall',
@@ -375,6 +403,7 @@ export const useTestStore = defineStore('test', {
         {
           type: 'word-recall',
           question: 'Vyberte 5 slov, ktoré ste si zapamätali na začiatku testu:',
+          options: this.allWords,
           correct: this.wordsToMemorize,
           points: 5,
         },
@@ -419,9 +448,14 @@ export const useTestStore = defineStore('test', {
       if (this.answerSubmitted) return
       if (this.selectedWords.includes(word)) {
         this.selectedWords = this.selectedWords.filter((w) => w !== word)
-      } else if (this.selectedWords.length < 5) {
+      } else if (this.currentTaskData.type === 'word-recall') {
+        if (this.selectedWords.length < this.currentTaskData.correct.length) {
+          this.selectedWords.push(word)
+        }
+      } else if (this.currentTaskData.type === 'select-words') {
         this.selectedWords.push(word)
       }
+      this.currentAnswer = this.selectedWords
     },
 
     handleStroopAnswer(color) {
@@ -450,6 +484,7 @@ export const useTestStore = defineStore('test', {
     },
 
     nextTask() {
+      this.resetWrongAnswerDialog()
       if (this.currentTask < this.tasks.length - 1) {
         this.currentTask++
       } else {
@@ -507,29 +542,29 @@ export const useTestStore = defineStore('test', {
       this.resetWrongAnswerDialog()
     },
 
-    // Získať validačnú správu pre tlačidlo
-    getValidationMessage() {
-      console.log('Getting validation message for task:', task)
-      const task = this.currentTaskData
+    // // Získať validačnú správu pre tlačidlo
+    // getValidationMessage() {
+    //   console.log('Getting validation message for task:', task)
+    //   const task = this.currentTaskData
 
-      if (task.type === 'number-recall') {
-        return `Zadajte 4 číslice (${this.userInput.length}/4)`
-      }
-      if (task.type === 'calculation') {
-        return 'Zadajte odpoveď'
-      }
-      if (task.type === 'word-recall') {
-        return `Vyberte 5 slov (${this.selectedWords.length}/5)`
-      }
-      if (task.type === 'trails') {
-        return `Dokončite sekvenciu (${this.trailsSequence.length}/${task.sequence.length})`
-      }
-      if (['instruction-recall', 'shape-recall', 'orientation', 'pattern'].includes(task.type)) {
-        return 'Vyberte odpoveď'
-      }
+    //   if (task.type === 'number-recall') {
+    //     return `Zadajte 4 číslice (${this.userInput.length}/4)`
+    //   }
+    //   if (task.type === 'calculation') {
+    //     return 'Zadajte odpoveď'
+    //   }
+    //   if (task.type === 'word-recall') {
+    //     return `Vyberte 5 slov (${this.selectedWords.length}/5)`
+    //   }
+    //   if (task.type === 'trails') {
+    //     return `Dokončite sekvenciu (${this.trailsSequence.length}/${task.sequence.length})`
+    //   }
+    //   if (['instruction-recall', 'shape-recall', 'orientation', 'pattern'].includes(task.type)) {
+    //     return 'Vyberte odpoveď'
+    //   }
 
-      return 'Dokončite úlohu'
-    },
+    //   return 'Dokončite úlohu'
+    // },
 
     test() {
       console.log('Test function called')
@@ -548,9 +583,14 @@ export const useTestStore = defineStore('test', {
       let points = 0
 
       if (
-        ['instruction-recall', 'shape-recall', 'select-shape', 'orientation', 'pattern'].includes(
-          task.type,
-        )
+        [
+          'instruction-recall',
+          'shape-recall',
+          'select-shape',
+          'orientation',
+          'pattern',
+          'j-word',
+        ].includes(task.type)
       ) {
         if (this.currentAnswer === task.correct) {
           points = task.points
@@ -580,6 +620,17 @@ export const useTestStore = defineStore('test', {
       } else if (task.type === 'word-recall') {
         const correctCount = this.selectedWords.filter((w) => task.correct.includes(w)).length
         points = correctCount
+      } else if (task.type === 'select-words') {
+        if (
+          this.selectedWords.every((word) => task.correct.includes(word)) &&
+          this.selectedWords.length === task.correct.length
+        ) {
+          points = task.correct.length
+        } else {
+          this.wrongAnswerMessage = `Na pokračovanie musíš vybrať obe slová označujúce ovocie`
+          this.showWrongAnswerSnackbar = true
+          return
+        }
       } else if (task.type === 'trails') {
         if (this.trailsSequence.length === task.sequence.length) {
           points = task.points
