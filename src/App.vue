@@ -1,6 +1,6 @@
 <template>
 
-  <v-app :theme="themeStore.theme">
+  <v-app @click.ctrl="testStore.developlmentModeToggle" :theme="themeStore.theme">
     <v-btn class="theme-btn" :prepend-icon="themeStore.getIcon" slim @click="themeStore.changeTheme">
     </v-btn>
 
@@ -19,6 +19,8 @@
 
 <script>
 import { useThemeStore } from '@/stores/themeStore'
+import { useTestStore } from '@/stores/testStore'
+
 
 import TheFooter from './components/TheFooter.vue';
 // import TheNavigation from './components/TheNavigation.vue'
@@ -32,8 +34,16 @@ export default {
   },
   data() {
     return {
-      themeStore: useThemeStore(),
+      // themeStore: useThemeStore(),
     }
+  },
+  computed: {
+    themeStore() {
+      return useThemeStore()
+    },
+    testStore() {
+      return useTestStore()
+    },
   }
 }
 </script>

@@ -13,14 +13,16 @@
                         <li>Kognitívny screening test na hodnotenie pamäte, pozornosti a mentálnych funkcií</li>
                         <li>Trvá približne 10-15 minút</li>
                         <li>Maximálne skóre: 30 bodov</li>
-                        <li>Test obsahuje úlohy na pamäť, orientáciu, výpočty, pozornosť a vizuospatiálne funkcie</li>
+                        <li>Test obsahuje úlohy na pamäť, orientáciu, výpočty, pozornosť a vizuospatiálne funkcie
+                        </li>
                         <li>Vyplňuje sa samostatne bez pomoci administrátora</li>
                     </ul>
 
                     <v-alert type="warning" variant="tonal" class="mt-4">
-                        <strong>⚠️ Upozornenie:</strong> Tento test slúži len na informatívne účely a screeningové
+                        <strong>Upozornenie:</strong> Tento test slúži len na informatívne účely a screeningové
                         použitie.
-                        Nemôže nahradiť odbornú lekársku diagnózu. Pri akýchkoľvek obavách týkajúcich sa kognitívnych
+                        Nemôže nahradiť odbornú lekársku diagnózu. Pri akýchkoľvek obavách týkajúcich sa
+                        kognitívnych
                         funkcií sa
                         obráťte na lekára.
                     </v-alert>
@@ -32,7 +34,6 @@
             </transition>
         </v-col>
     </v-row>
-
 </template>
 
 <script>
