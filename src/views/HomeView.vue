@@ -10,13 +10,11 @@
     </v-row>
   </div>
   <!-- </v-container> -->
-  <v-container>
-    <div v-if="testStore.developmentMode">
-      <p>{{ testStore.stage }}</p>
-      <p>{{ testStore.currentTaskData.type }}</p>
-      <p>Correct answer: {{ testStore.currentTaskData.correct }}</p>
-      <p>Current answer: {{ testStore.currentAnswer }}</p>
-    </div>
+  <v-container v-if="testStore.developmentMode">
+    <p>{{ testStore.stage }}</p>
+    <p>{{ testStore.currentTaskData.type }}</p>
+    <p>Correct answer: {{ testStore.currentTaskData.correct }}</p>
+    <p>Current answer: {{ testStore.currentAnswer }}</p>
   </v-container>
   <v-container>
     <!-- INTRO STAGE -->
@@ -89,7 +87,21 @@
         </v-card>
 
         <v-card elevation="4" class="pa-6" rounded="lg">
-          <h2 class="mb-6">{{ testStore.currentTaskDataQuestion }}</h2>
+          <v-container v-if="testStore.currentTaskData.type === 'text-instruction'">
+            <h1 :class="['mb-4', $vuetify.display.xs ? 'text-h4' : $vuetify.display.sm ? 'text-h3' : 'text-h2']"
+              :key="value" v-for="value in testStore.currentTaskData.question">
+              {{ value }}
+            </h1>
+            <v-img v-if="testStore.currentTaskData.correct" :class="{ inverted: themeStore.theme === 'dark' }"
+              :src="testStore.currentTaskData.correct" alt="Ukážka obrázku" />
+          </v-container>
+
+          <v-container v-else>
+            <h1 :class="$vuetify.display.xs ? 'text-h4' : $vuetify.display.sm ? 'text-h3' : 'text-h2'">
+              {{ testStore.currentTaskDataQuestion }}
+            </h1>
+          </v-container>
+
 
 
 
@@ -121,6 +133,51 @@
                 </v-row>
               </v-card>
             </v-container>
+          </transition>
+
+          <!-- NUMBER RECALL -->
+          <transition>
+            <div
+              v-if="testStore.currentTaskDataType === 'number-recall' || testStore.currentTaskData.type === 'number-write'">
+              <v-row align="center" justify="center">
+                <v-col cols="12" sm="4" md="6" class="d-flex justify-center">
+                  <v-text-field v-model="testStore.userInput" label="Štvorciferné číslo" variant="outlined" readonly
+                    maxlength="4" class="text-center text-field-center " color="primary"
+                    prepend-inner-icon="mdi-numeric" :hint="`${testStore.userInput.length}/4 číslic`" persistent-hint />
+                </v-col>
+              </v-row>
+
+              <v-row justify="center">
+                <v-col cols="12" sm="10" md="8">
+                  <v-card elevation="3" class="pa-4" rounded="lg">
+                    <v-row dense>
+                      <v-col v-for="num in [1, 2, 3, 4, 5, 6, 7, 8, 9]" :key="num" cols="4">
+                        <v-btn block size="x-large" color="primary" variant="elevated"
+                          :disabled="testStore.answerSubmitted || testStore.userInput.length >= 4"
+                          @click="testStore.addDigit(num)" class="text-h5 font-weight-bold" rounded="lg">
+                          {{ num }}
+                        </v-btn>
+                      </v-col>
+                      <v-col cols="4">
+                        <v-btn block size="x-large" color="error" variant="elevated"
+                          :disabled="testStore.answerSubmitted" @click="testStore.clearInput" class="text-h6"
+                          rounded="lg">
+                          <v-icon>mdi-backspace</v-icon>
+                          Vymazať
+                        </v-btn>
+                      </v-col>
+                      <v-col cols="4">
+                        <v-btn block size="x-large" color="primary" variant="elevated"
+                          :disabled="testStore.answerSubmitted || testStore.userInput.length >= 4"
+                          @click="testStore.addDigit(0)" class="text-h5 font-weight-bold" rounded="lg">
+                          0
+                        </v-btn>
+                      </v-col>
+                    </v-row>
+                  </v-card>
+                </v-col>
+              </v-row>
+            </div>
           </transition>
 
           <!-- WORD RECALL -->
@@ -159,7 +216,7 @@
 
           <!-- FIRST LETTER WORD/INSTRUCTION/SHAPE/ORIENTATION RECALL -->
           <div
-            v-if="['instruction-recall', 'shape-recall', 'orientation', 'j-word'].includes(this.testStore.currentTaskDataType)">
+            v-if="['instruction-recall', 'shape-recall', 'orientation', 'j-word', 'j-word-recall'].includes(this.testStore.currentTaskDataType)">
             <v-row>
               <v-col v-for="option in testStore.currentTaskData.options" :key="option" cols="12" sm="6" md="2.4">
                 <v-btn block size="large" :color="testStore.currentAnswer === option ? 'primary' : 'default'"
@@ -174,57 +231,16 @@
           </div>
 
 
+          <ShowWordsComponent />
 
 
-          <!-- NUMBER RECALL -->
-          <transition>
-            <div v-if="testStore.currentTaskDataType === 'number-recall'">
-              <v-row justify=" center">
-                <v-col cols="12" sm="10" md="8" lg="6">
-                  <v-text-field v-model="userInput" label="Štvorciferné číslo" variant="outlined" readonly maxlength="4"
-                    class="text-h4 text-center" color="primary" prepend-inner-icon="mdi-numeric"
-                    :hint="`${userInput.length}/4 číslic`" persistent-hint />
-                </v-col>
-              </v-row>
-
-              <v-row justify="center" class="mt-4">
-                <v-col cols="12" sm="10" md="8">
-                  <v-card elevation="3" class="pa-4" rounded="lg">
-                    <v-row dense>
-                      <v-col v-for="num in [1, 2, 3, 4, 5, 6, 7, 8, 9]" :key="num" cols="4">
-                        <v-btn block size="x-large" color="primary" variant="elevated"
-                          :disabled="answerSubmitted || userInput.length >= 4" @click="addDigit(num)"
-                          class="text-h5 font-weight-bold" rounded="lg">
-                          {{ num }}
-                        </v-btn>
-                      </v-col>
-                      <v-col cols="4">
-                        <v-btn block size="x-large" color="error" variant="elevated" :disabled="answerSubmitted"
-                          @click="clearInput" class="text-h6" rounded="lg">
-                          <v-icon>mdi-backspace</v-icon>
-                          Vymazať
-                        </v-btn>
-                      </v-col>
-                      <v-col cols="4">
-                        <v-btn block size="x-large" color="primary" variant="elevated"
-                          :disabled="answerSubmitted || userInput.length >= 4" @click="addDigit(0)"
-                          class="text-h5 font-weight-bold" rounded="lg">
-                          0
-                        </v-btn>
-                      </v-col>
-                    </v-row>
-                  </v-card>
-                </v-col>
-              </v-row>
-            </div>
-          </transition>
 
           <!-- CALCULATION -->
           <transition>
             <div v-if="testStore.currentTaskDataType === 'calculation'">
               <v-row justify="center">
                 <v-col cols="12" sm="8" md="6">
-                  <v-text-field v-model="userInput" label="Váš výsledok" variant="outlined" readonly
+                  <v-text-field v-model="testStore.userInput" label="Váš výsledok" variant="outlined" readonly
                     class="text-h4 text-center" color="primary" prepend-inner-icon="mdi-calculator" />
                 </v-col>
               </v-row>
@@ -234,21 +250,24 @@
                   <v-card elevation="3" class="pa-4" rounded="lg">
                     <v-row dense>
                       <v-col v-for="num in [1, 2, 3, 4, 5, 6, 7, 8, 9]" :key="num" cols="4">
-                        <v-btn block size="x-large" color="primary" variant="elevated" :disabled="answerSubmitted"
-                          @click="addDigit(num)" class="text-h5 font-weight-bold" rounded="lg">
+                        <v-btn block size="x-large" color="primary" variant="elevated"
+                          :disabled="testStore.answerSubmitted" @click="testStore.addDigit(num)"
+                          class="text-h5 font-weight-bold" rounded="lg">
                           {{ num }}
                         </v-btn>
                       </v-col>
                       <v-col cols="4">
-                        <v-btn block size="x-large" color="error" variant="elevated" :disabled="answerSubmitted"
-                          @click="clearInput" class="text-h6" rounded="lg">
+                        <v-btn block size="x-large" color="error" variant="elevated"
+                          :disabled="testStore.answerSubmitted" @click="testStore.clearInput" class="text-h6"
+                          rounded="lg">
                           <v-icon>mdi-backspace</v-icon>
                           Vymazať
                         </v-btn>
                       </v-col>
                       <v-col cols="4">
-                        <v-btn block size="x-large" color="primary" variant="elevated" :disabled="answerSubmitted"
-                          @click="addDigit(0)" class="text-h5 font-weight-bold" rounded="lg">
+                        <v-btn block size="x-large" color="primary" variant="elevated"
+                          :disabled="testStore.answerSubmitted" @click="testStore.addDigit(0)"
+                          class="text-h5 font-weight-bold" rounded="lg">
                           0
                         </v-btn>
                       </v-col>
@@ -273,16 +292,16 @@
             </v-alert>
 
             <v-card elevation="8" class="pa-10 text-center mb-6" rounded="lg" color="grey-lighten-5">
-              <div class="text-h1 font-weight-bold" :style="{ color: currentStroopItem.color }">
-                {{ currentStroopItem.word }}
+              <div class="text-h1 font-weight-bold" :style="{ color: testStore.currentStroopItem.color }">
+                {{ testStore.currentStroopItem.word }}
               </div>
             </v-card>
 
             <v-row justify="center">
-              <v-col v-for="color in stroopColors" :key="color.name" cols="6" sm="3">
+              <v-col v-for="color in testStore.stroopColors" :key="color.name" cols="6" sm="3">
                 <v-btn block size="x-large" :style="{ backgroundColor: color.hex, color: 'white' }"
-                  @click="handleStroopAnswer(color.name)" class="text-h6 font-weight-bold stroop-color-btn" rounded="lg"
-                  elevation="4">
+                  @click="testStore.handleStroopAnswer(color.name)" class="text-h6 font-weight-bold stroop-color-btn"
+                  rounded="lg" elevation="4">
                   {{ color.name.toUpperCase() }}
                 </v-btn>
               </v-col>
@@ -290,24 +309,33 @@
           </div>
 
           <!-- PATTERN -->
-          <div v-if="testStore.currentTaskDataType === 'pattern'">
-            <v-card elevation="3" class="pa-6 mb-4" rounded="lg" color="grey-lighten-4">
-              <v-row justify="center">
-                <v-col v-for="(item, idx) in currentTaskData.pattern" :key="idx" cols="auto">
-                  <div class="text-h2">{{ item }}</div>
-                </v-col>
-              </v-row>
-            </v-card>
 
+
+          <div v-if="testStore.currentTaskDataType === 'pattern'">
+            <!-- Vzorový obrázok hore v strede -->
+            <v-row justify="center" class="mb-6">
+              <v-col cols="12" sm="8" md="6" lg="4">
+                <v-img :class="{ inverted: themeStore.theme === 'dark' }" :src="testStore.currentTaskData.pattern"
+                  alt="Ukážka obrázku" max-height="200" contain />
+              </v-col>
+            </v-row>
+
+            <!-- Options s menšími obrázkami -->
             <v-row justify="center">
-              <v-col v-for="option in currentTaskData.options" :key="option" cols="6" sm="3">
-                <v-btn block size="x-large" :color="currentAnswer === option ? 'primary' : 'default'"
-                  :variant="currentAnswer === option ? 'elevated' : 'outlined'" :disabled="answerSubmitted"
-                  @click="selectAnswer(option)" class="text-h3"
-                  :class="{ 'selected-pattern': currentAnswer === option }" rounded="lg">
-                  <v-icon v-if="currentAnswer === option" class="mr-2">mdi-check-circle</v-icon>
-                  {{ option }}
-                </v-btn>
+              <v-col v-for="option in testStore.currentTaskData.options" :key="option" cols="4">
+                <v-card elevation="2"
+                  :color="testStore.currentAnswer && testStore.currentAnswer.includes(option) ? 'primary' : 'default'"
+                  :variant="testStore.currentAnswer && testStore.currentAnswer.includes(option) ? 'elevated' : 'outlined'"
+                  :disabled="testStore.answerSubmitted" @click="testStore.toggleWord(option)"
+                  :class="{ 'selected-pattern': testStore.currentAnswer && testStore.currentAnswer.includes(option) }"
+                  rounded="lg" class="pa-1 cursor-pointer" hover>
+                  <v-img :class="{ inverted: themeStore.theme === 'dark' }"
+                    :src="testStore.currentTaskData.src[option - 1]" alt="Option obrázok" max-height="120" contain />
+                  <v-icon v-if="testStore.currentAnswer && testStore.currentAnswer.includes(option)" color="primary"
+                    size="large" class="position-absolute top-0 right-0 ma-2">
+                    mdi-check-circle
+                  </v-icon>
+                </v-card>
               </v-col>
             </v-row>
           </div>
@@ -345,7 +373,7 @@
 
 
           <!-- CONTINUE BUTTON -->
-          <div v-if="testStore.currentTaskDataType !== 'stroop'">
+          <div v-if="testStore.currentTaskDataType !== 'stroop' && testStore.currentTaskDataType !== 'show-words'">
             <!-- ✅ Alert bez close button, väčší bold text -->
             <v-alert v-if="testStore.showWrongAnswerSnackbar" type="error" variant="tonal" class="mb-4" prominent>
               <div class="d-flex align-center">
@@ -464,7 +492,11 @@
 <script>
 import TheIntro from '@/components/TheIntro.vue';
 import TheCircleSquareComponent from '@/components/TheCircleSquareComponent.vue';
+import ShowWordsComponent from '@/components/ShowWordsComponent.vue';
+
 import { useTestStore } from '@/stores/testStore';
+import { useThemeStore } from '@/stores/themeStore';
+
 
 // import { useThemeStore } from '@/stores/theme'
 
@@ -474,7 +506,7 @@ export default {
   components: {
     TheIntro,
     TheCircleSquareComponent,
-
+    ShowWordsComponent,
 
   },
   data() {
@@ -923,6 +955,9 @@ export default {
   computed: {
     testStore() {
       return useTestStore()
+    },
+    themeStore() {
+      return useThemeStore()
     },
   },
   created() {

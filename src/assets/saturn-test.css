@@ -5,6 +5,10 @@
 
 /* === ZÁKLADNÉ ŠTÝLY === */
 
+.inverted {
+  filter: invert(1);
+}
+
 /* === HLAVNÉ NADPISY === */
 h1 {
   color: #e5b52c;
@@ -763,4 +767,6 @@ li:before {
     font-size: 1.4em;
     padding: 20px;
   }
+
+  /* NUMBER RECALL INPUT CENTERING */
 }
