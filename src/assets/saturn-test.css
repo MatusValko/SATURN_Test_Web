@@ -768,5 +768,29 @@ li:before {
     padding: 20px;
   }
 
+  /* 🌈 animované alebo cyklické farby */
+  /* .rainbow span:nth-child(1) {
+    color: red;
+  }
+  .rainbow span:nth-child(2) {
+    color: green;
+  }
+  .rainbow span:nth-child(3) {
+    color: blue;
+  }
+  .rainbow span:nth-child(4) {
+    color: red;
+  }
+  .rainbow span:nth-child(5) {
+    color: green;
+  } */
+  /* .rainbow {
+    display: inline-block;
+    background: linear-gradient(90deg, red, green, blue, red);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+  } */
+
   /* NUMBER RECALL INPUT CENTERING */
 }

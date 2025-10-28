@@ -29,16 +29,27 @@ export const useTestStore = defineStore('test', {
     stroopIndex: 0,
     stroopCorrect: 0,
     stroopItems: [
+      { word: 'RUKA', color: '#2196f3', correct: 'modrá' },
+      { word: 'KNIHA', color: '#f44336', correct: 'červená' },
+      { word: 'STÔL', color: '#4caf50', correct: 'zelená' },
+      { word: 'ZELENÁ', color: '#2196f3', correct: 'modrá' },
+      { word: 'ČERVENÁ', color: '#4caf50', correct: 'zelená' },
+      { word: 'MODRÁ', color: '#f44336', correct: 'červená' },
+      { word: 'ČERVENÁ', color: '#2196f3', correct: 'modrá' },
+      { word: 'MODRÁ', color: '#4caf50', correct: 'zelená' },
+      { word: 'ZELENÁ', color: '#f44336', correct: 'červená' },
+      { word: 'ČERVENÁ', color: '#4caf50', correct: 'zelená' },
+      { word: 'MODRÁ', color: '#f44336', correct: 'červená' },
       { word: 'ČERVENÁ', color: '#2196f3', correct: 'modrá' },
       { word: 'ZELENÁ', color: '#f44336', correct: 'červená' },
       { word: 'MODRÁ', color: '#4caf50', correct: 'zelená' },
-      { word: 'ŽLTÁ', color: '#f44336', correct: 'červená' },
+      { word: 'ZELENÁ', color: '#2196f3', correct: 'modrá' },
     ],
     stroopColors: [
       { name: 'červená', hex: '#f44336' },
       { name: 'modrá', hex: '#2196f3' },
       { name: 'zelená', hex: '#4caf50' },
-      { name: 'žltá', hex: '#ffc107' },
+      // { name: 'žltá', hex: '#ffc107' },
     ],
 
     trailsSequence: [],
@@ -220,7 +231,13 @@ export const useTestStore = defineStore('test', {
     canContinue(state) {
       const task = state.tasks[state.currentTask] || {}
 
-      if (task.type === 'stroop') return false
+      if (task.type === 'stroop') {
+        if (state.currentAnswer !== null) {
+          return true
+        } else {
+          return false
+        }
+      }
       if (
         task.type === 'text-instruction' ||
         task.type === 'show-words' ||
@@ -480,88 +497,124 @@ export const useTestStore = defineStore('test', {
         //   correct: 33,
         //   points: 2,
         // },
+        // {
+        //   //19
+        //   type: 'text-instruction',
+        //   question: [
+        //     'Ďalej uvidíš niekoľko obrázkov.',
+        //     'Vyber malé obrázky, z ktorých sa skladá veľký obrázok.',
+        //   ],
+        //   correct: '/src/assets/drawingExample.png',
+        // },
+        // {
+        //   //20
+        //   type: 'pattern',
+        //   question: 'Ktoré malé obrázky tvoria veľký obrázok?',
+        //   pattern: '/src/assets/firstPattern/shapes-answer.webp',
+        //   options: [1, 2, 3, 4, 5, 6],
+        //   src: [
+        //     '/src/assets/firstPattern/shapes1.webp',
+        //     '/src/assets/firstPattern/shapes2.webp',
+        //     '/src/assets/firstPattern/shapes3.webp',
+        //     '/src/assets/firstPattern/shapes4.webp',
+        //     '/src/assets/firstPattern/shapes5.webp',
+        //     '/src/assets/firstPattern/shapes6.webp',
+        //   ],
+        //   correct: [1, 5],
+        //   points: 2,
+        // },
+        // {
+        //   //21
+        //   type: 'pattern',
+        //   question: 'Ktoré malé obrázky tvoria veľký obrázok?',
+        //   pattern: '/src/assets/secondPattern/face-answer.webp',
+        //   options: [1, 2, 3, 4, 5, 6],
+        //   src: [
+        //     '/src/assets/secondPattern/face1.webp',
+        //     '/src/assets/secondPattern/face2.webp',
+        //     '/src/assets/secondPattern/face3.webp',
+        //     '/src/assets/secondPattern/face4.webp',
+        //     '/src/assets/secondPattern/face5.webp',
+        //     '/src/assets/secondPattern/face6.webp',
+        //   ],
+        //   correct: [2, 6],
+        //   points: 2,
+        // },
+        // {
+        //   //22
+        //   type: 'pattern',
+        //   question: 'Ktoré malé obrázky tvoria veľký obrázok?',
+        //   pattern: '/src/assets/thirdPattern/diagonal-line-answer.webp',
+        //   options: [1, 2, 3, 4, 5, 6],
+        //   src: [
+        //     '/src/assets/thirdPattern/diagonal-line1.webp',
+        //     '/src/assets/thirdPattern/diagonal-line2.webp',
+        //     '/src/assets/thirdPattern/diagonal-line3.webp',
+        //     '/src/assets/thirdPattern/diagonal-line4.webp',
+        //     '/src/assets/thirdPattern/diagonal-line5.webp',
+        //     '/src/assets/thirdPattern/diagonal-line6.webp',
+        //   ],
+        //   correct: [3, 6],
+        //   points: 2,
+        // },
+        // {
+        //   //23
+        //   type: 'pattern',
+        //   question: 'Ktoré malé obrázky tvoria veľký obrázok?',
+        //   pattern: '/src/assets/fourthPattern/cube-answer.webp',
+        //   options: [1, 2, 3, 4, 5, 6],
+        //   src: [
+        //     '/src/assets/fourthPattern/cube1.webp',
+        //     '/src/assets/fourthPattern/cube2.webp',
+        //     '/src/assets/fourthPattern/cube3.webp',
+        //     '/src/assets/fourthPattern/cube4.webp',
+        //     '/src/assets/fourthPattern/cube5.webp',
+        //     '/src/assets/fourthPattern/cube6.webp',
+        //   ],
+        //   correct: [3, 4],
+        //   points: 2,
+        // },
         {
-          //19
+          //24
           type: 'text-instruction',
           question: [
-            'Ďalej uvidíš niekoľko obrázkov.',
-            'Vyber malé obrázky, z ktorých sa skladá veľký obrázok.',
+            'Ďalej uvidíš niekoľko slov.',
+            'Vyberte <span class="rainbow">FARBU</span>, ktorou je každé slovo napísané.',
           ],
-          correct: '/src/assets/drawingExample.png',
         },
+
         {
-          //20
-          type: 'pattern',
-          question: 'Ktoré malé obrázky tvoria veľký obrázok?',
-          pattern: '/src/assets/firstPattern/shapes-answer.webp',
-          options: [1, 2, 3, 4, 5, 6],
-          src: [
-            '/src/assets/firstPattern/shapes1.webp',
-            '/src/assets/firstPattern/shapes2.webp',
-            '/src/assets/firstPattern/shapes3.webp',
-            '/src/assets/firstPattern/shapes4.webp',
-            '/src/assets/firstPattern/shapes5.webp',
-            '/src/assets/firstPattern/shapes6.webp',
-          ],
-          correct: [1, 5],
-          points: 2,
-        },
-        {
-          //21
-          type: 'pattern',
-          question: 'Ktoré malé obrázky tvoria veľký obrázok?',
-          pattern: '/src/assets/secondPattern/face-answer.webp',
-          options: [1, 2, 3, 4, 5, 6],
-          src: [
-            '/src/assets/secondPattern/face1.webp',
-            '/src/assets/secondPattern/face2.webp',
-            '/src/assets/secondPattern/face3.webp',
-            '/src/assets/secondPattern/face4.webp',
-            '/src/assets/secondPattern/face5.webp',
-            '/src/assets/secondPattern/face6.webp',
-          ],
-          correct: [2, 6],
-          points: 2,
-        },
-        {
-          //22
-          type: 'pattern',
-          question: 'Ktoré malé obrázky tvoria veľký obrázok?',
-          pattern: '/src/assets/thirdPattern/diagonal-line-answer.webp',
-          options: [1, 2, 3, 4, 5, 6],
-          src: [
-            '/src/assets/thirdPattern/diagonal-line1.webp',
-            '/src/assets/thirdPattern/diagonal-line2.webp',
-            '/src/assets/thirdPattern/diagonal-line3.webp',
-            '/src/assets/thirdPattern/diagonal-line4.webp',
-            '/src/assets/thirdPattern/diagonal-line5.webp',
-            '/src/assets/thirdPattern/diagonal-line6.webp',
-          ],
-          correct: [3, 6],
-          points: 2,
-        },
-        {
-          //23
-          type: 'pattern',
-          question: 'Ktoré malé obrázky tvoria veľký obrázok?',
-          pattern: '/src/assets/fourthPattern/cube-answer.webp',
-          options: [1, 2, 3, 4, 5, 6],
-          src: [
-            '/src/assets/fourthPattern/cube1.webp',
-            '/src/assets/fourthPattern/cube2.webp',
-            '/src/assets/fourthPattern/cube3.webp',
-            '/src/assets/fourthPattern/cube4.webp',
-            '/src/assets/fourthPattern/cube5.webp',
-            '/src/assets/fourthPattern/cube6.webp',
-          ],
-          correct: [3, 4],
-          points: 2,
-        },
-        {
+          //25
           type: 'stroop',
-          question: 'Stroop test: Kliknite na farbu textu',
+          // question: 'Stroop test: Kliknite na farbu textu',
+          question: '',
+
           points: 4,
         },
+        {
+          //26
+          type: 'text-instruction',
+          question: ['Už si takmer na konci!', 'V posledných úlohách budeš spájať body.'],
+        },
+        {
+          //27
+          type: 'text-instruction',
+          question: [
+            'Kreslite čiary od jedného bodu k druhému.',
+            'Bodky s číslami spájaj podľa poradia od najnižšieho po najvyššie (1, 2, 3, …).',
+            ' Bodky s písmenami spájaj v abecednom poradí (A, B, C, …).',
+          ],
+        },
+        {
+          //28
+          type: 'text-instruction',
+          question: [
+            'Bodky vyzerajú takto:',
+            '… a zafarbia sa nazeleno, keď ich spájaš v správnom poradí:',
+            '… ale bliknú načerveno, ak sa pomýliš v poradí:',
+          ],
+        },
+
         // {
         //   type: 'pattern',
         //   question:
@@ -600,17 +653,27 @@ export const useTestStore = defineStore('test', {
       this.currentAnswer = this.selectedWords
     },
 
-    handleStroopAnswer(color) {
-      if (color === this.currentStroopItem.correct) {
+    selectStroopColor(color) {
+      this.currentAnswer = color
+      this.resetWrongAnswerDialog
+    },
+
+    handleStroopAnswer() {
+      if (this.currentAnswer === this.currentStroopItem.correct) {
+        console.log('stroop correct')
         this.stroopCorrect++
+      } else {
+        console.log('stroop INcorrect')
       }
 
       if (this.stroopIndex < this.stroopItems.length - 1) {
         this.stroopIndex++
+        this.currentAnswer = null
       } else {
         this.score += this.stroopCorrect
         this.stroopIndex = 0
         this.stroopCorrect = 0
+        this.currentAnswer = null
         this.nextTask()
       }
     },
@@ -789,6 +852,9 @@ export const useTestStore = defineStore('test', {
         } else {
           console.log('Wrong answer. Given:', this.currentAnswer, 'Expected:', task.correct)
         }
+      } else if (task.type === 'stroop') {
+        this.handleStroopAnswer()
+        return
       }
 
       this.score += points

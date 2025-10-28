@@ -89,8 +89,7 @@
         <v-card elevation="4" class="pa-6" rounded="lg">
           <v-container v-if="testStore.currentTaskData.type === 'text-instruction'">
             <h1 :class="['mb-4', $vuetify.display.xs ? 'text-h4' : $vuetify.display.sm ? 'text-h3' : 'text-h2']"
-              :key="value" v-for="value in testStore.currentTaskData.question">
-              {{ value }}
+              :key="value" v-for="value in testStore.currentTaskData.question" v-html="value">
             </h1>
             <v-img v-if="testStore.currentTaskData.correct" :class="{ inverted: themeStore.theme === 'dark' }"
               :src="testStore.currentTaskData.correct" alt="Ukážka obrázku" />
@@ -279,38 +278,7 @@
           </transition>
 
 
-
-
-
-          <!-- STROOP TEST -->
-          <div v-if="testStore.currentTaskDataType === 'stroop'">
-            <v-alert type="warning" variant="tonal" prominent class="mb-6">
-              <div class="text-h6">
-                <v-icon class="mr-2">mdi-alert</v-icon>
-                Pozor! Kliknite na FARBU textu, nie na to čo je napísané
-              </div>
-            </v-alert>
-
-            <v-card elevation="8" class="pa-10 text-center mb-6" rounded="lg" color="grey-lighten-5">
-              <div class="text-h1 font-weight-bold" :style="{ color: testStore.currentStroopItem.color }">
-                {{ testStore.currentStroopItem.word }}
-              </div>
-            </v-card>
-
-            <v-row justify="center">
-              <v-col v-for="color in testStore.stroopColors" :key="color.name" cols="6" sm="3">
-                <v-btn block size="x-large" :style="{ backgroundColor: color.hex, color: 'white' }"
-                  @click="testStore.handleStroopAnswer(color.name)" class="text-h6 font-weight-bold stroop-color-btn"
-                  rounded="lg" elevation="4">
-                  {{ color.name.toUpperCase() }}
-                </v-btn>
-              </v-col>
-            </v-row>
-          </div>
-
           <!-- PATTERN -->
-
-
           <div v-if="testStore.currentTaskDataType === 'pattern'">
             <!-- Vzorový obrázok hore v strede -->
             <v-row justify="center" class="mb-6">
@@ -339,6 +307,43 @@
               </v-col>
             </v-row>
           </div>
+
+
+          <!-- STROOP TEST -->
+          <div v-if="testStore.currentTaskDataType === 'stroop'">
+            <!-- <v-alert type="warning" variant="tonal" prominent class="mb-6">
+    <div class="text-h6">
+      <v-icon class="mr-2">mdi-alert</v-icon>
+      Pozor! Kliknite na FARBU textu, nie na to čo je napísané
+    </div>
+  </v-alert> -->
+
+            <v-card elevation="8" class="pa-10 text-center mb-6" rounded="lg" color="grey-lighten-5">
+              <div class="text-h1 font-weight-bold" :style="{ color: testStore.currentStroopItem.color }">
+                {{ testStore.currentStroopItem.word }}
+              </div>
+            </v-card>
+
+            <v-row justify="center">
+              <v-col v-for="color in testStore.stroopColors" :key="color.name" cols="6" sm="3">
+                <v-btn block size="x-large" :color="testStore.currentAnswer === color.name ? 'primary' : 'default'"
+                  :variant="testStore.currentAnswer === color.name ? 'elevated' : 'outlined'" :style="{
+                    backgroundColor: testStore.currentAnswer === color.name
+                      ? undefined
+                      : (themeStore.theme === 'dark' ? '#333' : '#fff'),
+                    borderColor: testStore.currentAnswer === color.name ? undefined : color.value,
+                    borderWidth: '3px',
+                    borderStyle: 'solid'
+                  }" :disabled="testStore.answerSubmitted" @click="testStore.selectStroopColor(color.name)"
+                  class="text-h6 font-weight-bold stroop-color-btn"
+                  :class="{ 'selected-stroop': testStore.currentAnswer === color.name }" rounded="lg" elevation="4">
+                  <v-icon v-if="testStore.currentAnswer === color.name" class="mr-2">mdi-check-circle</v-icon>
+                  {{ color.name.toUpperCase() }}
+                </v-btn>
+              </v-col>
+            </v-row>
+          </div>
+
 
           <!-- TRAILS TEST -->
           <div v-if="testStore.currentTaskDataType === 'trails'">
@@ -373,7 +378,7 @@
 
 
           <!-- CONTINUE BUTTON -->
-          <div v-if="testStore.currentTaskDataType !== 'stroop' && testStore.currentTaskDataType !== 'show-words'">
+          <div v-if="testStore.currentTaskDataType !== 'show-words'">
             <!-- ✅ Alert bez close button, väčší bold text -->
             <v-alert v-if="testStore.showWrongAnswerSnackbar" type="error" variant="tonal" class="mb-4" prominent>
               <div class="d-flex align-center">
@@ -973,3 +978,12 @@ export default {
   // }
 };
 </script>
+
+<style scoped>
+::v-deep(.rainbow) {
+  background: linear-gradient(90deg, red, green, blue);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;
+}
+</style>
