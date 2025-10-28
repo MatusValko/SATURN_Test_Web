@@ -4,11 +4,9 @@
     <v-btn class="theme-btn" :prepend-icon="themeStore.getIcon" slim @click="themeStore.changeTheme">
     </v-btn>
 
-
     <v-main>
       <v-container>
         <RouterView />
-
       </v-container>
     </v-main>
   </v-app>

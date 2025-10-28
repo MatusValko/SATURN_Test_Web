@@ -52,7 +52,7 @@ export default {
                         this.onWordsComplete();
                         return;
                     }
-                }, 4000);
+                }, this.testStore.wordsToMemorizeInterval);
             }
         },
         stopWordCycle() {

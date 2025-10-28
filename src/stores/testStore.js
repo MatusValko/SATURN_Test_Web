@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 
 export const useTestStore = defineStore('test', {
   state: () => ({
-    developmentMode: true,
+    developmentMode: false,
 
     showWrongAnswerSnackbar: false,
     wrongAnswerMessage: '',
@@ -16,16 +16,15 @@ export const useTestStore = defineStore('test', {
     userInput: '',
     selectedWords: [],
     selectedShape: '',
-    correctShape: 'Kruh',
+    correctShape: 'kruh',
 
     answerSubmitted: false,
     currentAnswer: null,
     count: 0,
-    // instruction: 'Kliknite na štvorec aby ste pokračovali',
     displayNumber: '1239',
     fruitsToSelect: ['BANÁN', 'POMARANČ'],
     wordsToMemorize: ['JABLKO', 'PERO', 'KRAVATA', 'DOM', 'AUTO'],
-
+    wordsToMemorizeInterval: 100,
     stroopIndex: 0,
     stroopCorrect: 0,
     stroopItems: [
@@ -49,11 +48,9 @@ export const useTestStore = defineStore('test', {
       { name: 'červená', hex: '#f44336' },
       { name: 'modrá', hex: '#2196f3' },
       { name: 'zelená', hex: '#4caf50' },
-      // { name: 'žltá', hex: '#ffc107' },
     ],
 
     trailsSequence: [],
-    shuffledTrails: [],
     all4Words: ['BANÁN', 'KOSTOL', 'POMARANČ', 'SPONKA'],
     allWords: [
       'KRAVATA',
@@ -170,12 +167,16 @@ export const useTestStore = defineStore('test', {
       return state.tasks[state.currentTask] || {}
     },
 
+    currentTaskIndex(state) {
+      return state.currentTask
+    },
+
     currentTaskDataType(state) {
       let taskTMP = state.tasks[state.currentTask]
       if (taskTMP) {
         return taskTMP.type
       } else {
-        return '' // vrať prázdny string namiesto {}
+        return ''
       }
     },
 
@@ -194,6 +195,15 @@ export const useTestStore = defineStore('test', {
 
     scorePercentage(state) {
       return Math.round((state.score / 30) * 100)
+    },
+
+    // ✅ OPRAVA: shuffledTrails ako getter
+    shuffledTrails(state) {
+      const task = state.tasks[state.currentTask]
+      if (task && task.type === 'trails' && task.sequence) {
+        return [...task.sequence].sort(() => Math.random() - 0.5)
+      }
+      return []
     },
 
     interpretation(state) {
@@ -258,7 +268,7 @@ export const useTestStore = defineStore('test', {
         return state.currentAnswer !== null
       }
 
-      if (task.type === 'number-recall') {
+      if (task.type === 'number-recall' || task.type === 'number-write') {
         return state.userInput.length === 4
       }
 
@@ -269,13 +279,6 @@ export const useTestStore = defineStore('test', {
       if (task.type === 'word-recall') {
         return state.selectedWords.length === task.correct.length
       }
-
-      // if (task.type === 'select-words') {
-      //   //if all selcted words are correct and the number of selected words matches the correct answers then return true
-      //   if (state.selectedWords.length === 0) {
-      //     return false
-      //   }
-      // }
 
       if (task.type === 'pattern') {
         return state.currentAnswer !== null
@@ -324,256 +327,256 @@ export const useTestStore = defineStore('test', {
       const currentDay = new Date().toLocaleString('sk-SK', { weekday: 'long' })
 
       this.tasks = [
-        // {
-        //   //1
-        //   type: 'select-shape',
-        //   question: `Vyber ${this.correctShape}, potom klikni na tlačidlo "pokračovať"`,
-        //   options: [
-        //     //TODO zatial sa nebere options pri ulohe select-shape
-        //     'kruh',
-        //     'štvorec',
-        //   ],
-        //   correct: this.correctShape,
-        //   points: 1,
-        // },
-        // {
-        //   //2
-        //   type: 'j-word',
-        //   question: 'Vyberte slovo, ktoré začína na písmeno J:',
-        //   options: ['Hrad', 'List', 'Ruka', 'Meno', 'Voda', 'Dážď', 'Jar', 'Kruh', 'Znak', 'Tvor'],
-        //   correct: 'Jar',
-        //   points: 1,
-        // },
-        // {
-        //   //3
-        //   type: 'select-words',
-        //   question: 'Vyberte slová, ktoré označujú ovocie:',
-        //   options: this.all4Words,
-        //   correct: this.fruitsToSelect,
-        //   points: 2,
-        // },
-        // {
-        //   //4
-        //   type: 'number-write',
-        //   question: `Zadaj číslo ${this.displayNumber}:`,
-        //   correct: this.displayNumber,
-        //   points: 1,
-        // },
-        // {
-        //   //5
-        //   type: 'text-instruction',
-        //   question: [
-        //     'Ďalej nasleduje pamäťová úloha.',
-        //     'Zapamätajte si päť slov.',
-        //     'Zobrazia sa automaticky na ďalšej strane.',
-        //     'Sústreď sa!',
-        //     'Každé slovo uvidíš len na pár sekúnd.',
-        //     ' Tvojou úlohou je zapamätať si tieto slová.',
-        //   ],
-        //   // correct: null,
-        //   // points: 1,
-        // },
-        // {
-        //   //6
-        //   type: 'text-instruction',
-        //   question: ['Zapamätaj si slová.', '...Už prichádzajú!...'],
-        //   // correct: null,
-        //   // points: 1
-        // },
-        // {
-        //   //7
-        //   type: 'show-words',
-        //   question: '',
-        //   correct: this.wordsToMemorize,
-        //   // points: 1
-        // },
-        // {
-        //   //8
-        //   type: 'text-instruction',
-        //   question: [
-        //     ' Zapamätaj si tých päť slov na neskôr.',
-        //     'Teraz, prosím, odpovedz na niekoľko ďalších otázok.',
-        //   ],
-        //   // correct: null,
-        //   // points: 1
-        // },
-        // {
-        //   //9
-        //   type: 'shape-recall',
-        //   question: 'Aký tvar ste mali pred chvíľou vybrať?',
-        //   options: ['Kruh', 'Obdĺžnik', 'Štvorec', 'Trojuholník'],
-        //   correct: this.correctShape,
-        //   points: 1,
-        // },
-        // {
-        //   //   //10
-        //   type: 'j-word-recall',
-        //   question:
-        //     'Pred chvíľou ste mali vybrať slovo začínajúce určitým písmenom. Vyberte rovnaké slovo znovu:',
-        //   options: ['Hrad', 'List', 'Ruka', 'Meno', 'Voda', 'Dážď', 'Jar', 'Kruh', 'Znak', 'Tvor'],
-        //   correct: 'Jar',
-        //   points: 1,
-        // },
-        // {
-        //   //11
-        //   type: 'number-recall',
-        //   question:
-        //     'Keď si prvýkrát videl túto numerickú klávesnicu, musel si zadať konkrétne štvormiestne číslo. Zadaj to isté číslo znova.:',
-        //   correct: this.displayNumber,
-        //   points: 1,
-        // },
-        // {
-        //   //12
-        //   type: 'orientation',
-        //   question: 'Aký je aktuálny mesiac?',
-        //   options: [
-        //     'Január',
-        //     'Február',
-        //     'Marec',
-        //     'Apríl',
-        //     'Máj',
-        //     'Jún',
-        //     'Júl',
-        //     'August',
-        //     'September',
-        //     'Október',
-        //     'November',
-        //     'December',
-        //   ],
-        //   correct: currentMonth.charAt(0).toUpperCase() + currentMonth.slice(1),
-        //   points: 1,
-        // },
-        // {
-        //   //13
-        //   type: 'orientation',
-        //   question: 'Aký je aktuálny rok?',
-        //   options: [
-        //     (parseInt(currentYear) - 1).toString(),
-        //     (parseInt(currentYear) - 2).toString(),
-        //     currentYear,
-        //     (parseInt(currentYear) + 2).toString(),
-        //     (parseInt(currentYear) + 1).toString(),
-        //     (parseInt(currentYear) + 3).toString(),
-        //   ],
-        //   correct: currentYear,
-        //   points: 1,
-        // },
-        // {
-        //   //14
-        //   type: 'orientation',
-        //   question: 'Aký je dnes deň v týždni?',
-        //   options: ['Pondelok', 'Utorok', 'Streda', 'Štvrtok', 'Piatok', 'Sobota', 'Nedeľa'],
-        //   correct: currentDay.charAt(0).toUpperCase() + currentDay.slice(1),
-        //   points: 1,
-        // },
-        // {
-        //   //15
-        //   type: 'orientation',
-        //   question: 'V ktorej krajine sa nachádzate?',
-        //   options: ['Slovensko', 'Česko', 'Poľsko', 'Maďarsko', 'Rakúsko', 'Nemecko'],
-        //   correct: 'Slovensko',
-        //   points: 1,
-        // },
-        // {
-        //   //16
-        //   type: 'word-recall',
-        //   question: 'Predtým ste si mali zapamätať 5 slov. Vybertie tie isté slová zo zoznamu:',
-        //   options: this.allWords,
-        //   correct: this.wordsToMemorize,
-        //   points: 5,
-        // },
-        // {
-        //   //17
-        //   type: 'calculation',
-        //   question:
-        //     'Ideš do obchodu s presne 100€. Kúpiš tucet jabĺk za 7€ a trojkolku za 60€. Koľko si minul?',
-        //   correct: 67,
-        //   points: 1,
-        // },
-        // {
-        //   //18
-        //   type: 'calculation',
-        //   question: 'Po tomto nákupe, koľko Vám zostalo peňazí?',
-        //   correct: 33,
-        //   points: 2,
-        // },
-        // {
-        //   //19
-        //   type: 'text-instruction',
-        //   question: [
-        //     'Ďalej uvidíš niekoľko obrázkov.',
-        //     'Vyber malé obrázky, z ktorých sa skladá veľký obrázok.',
-        //   ],
-        //   correct: '/src/assets/drawingExample.png',
-        // },
-        // {
-        //   //20
-        //   type: 'pattern',
-        //   question: 'Ktoré malé obrázky tvoria veľký obrázok?',
-        //   pattern: '/src/assets/firstPattern/shapes-answer.webp',
-        //   options: [1, 2, 3, 4, 5, 6],
-        //   src: [
-        //     '/src/assets/firstPattern/shapes1.webp',
-        //     '/src/assets/firstPattern/shapes2.webp',
-        //     '/src/assets/firstPattern/shapes3.webp',
-        //     '/src/assets/firstPattern/shapes4.webp',
-        //     '/src/assets/firstPattern/shapes5.webp',
-        //     '/src/assets/firstPattern/shapes6.webp',
-        //   ],
-        //   correct: [1, 5],
-        //   points: 2,
-        // },
-        // {
-        //   //21
-        //   type: 'pattern',
-        //   question: 'Ktoré malé obrázky tvoria veľký obrázok?',
-        //   pattern: '/src/assets/secondPattern/face-answer.webp',
-        //   options: [1, 2, 3, 4, 5, 6],
-        //   src: [
-        //     '/src/assets/secondPattern/face1.webp',
-        //     '/src/assets/secondPattern/face2.webp',
-        //     '/src/assets/secondPattern/face3.webp',
-        //     '/src/assets/secondPattern/face4.webp',
-        //     '/src/assets/secondPattern/face5.webp',
-        //     '/src/assets/secondPattern/face6.webp',
-        //   ],
-        //   correct: [2, 6],
-        //   points: 2,
-        // },
-        // {
-        //   //22
-        //   type: 'pattern',
-        //   question: 'Ktoré malé obrázky tvoria veľký obrázok?',
-        //   pattern: '/src/assets/thirdPattern/diagonal-line-answer.webp',
-        //   options: [1, 2, 3, 4, 5, 6],
-        //   src: [
-        //     '/src/assets/thirdPattern/diagonal-line1.webp',
-        //     '/src/assets/thirdPattern/diagonal-line2.webp',
-        //     '/src/assets/thirdPattern/diagonal-line3.webp',
-        //     '/src/assets/thirdPattern/diagonal-line4.webp',
-        //     '/src/assets/thirdPattern/diagonal-line5.webp',
-        //     '/src/assets/thirdPattern/diagonal-line6.webp',
-        //   ],
-        //   correct: [3, 6],
-        //   points: 2,
-        // },
-        // {
-        //   //23
-        //   type: 'pattern',
-        //   question: 'Ktoré malé obrázky tvoria veľký obrázok?',
-        //   pattern: '/src/assets/fourthPattern/cube-answer.webp',
-        //   options: [1, 2, 3, 4, 5, 6],
-        //   src: [
-        //     '/src/assets/fourthPattern/cube1.webp',
-        //     '/src/assets/fourthPattern/cube2.webp',
-        //     '/src/assets/fourthPattern/cube3.webp',
-        //     '/src/assets/fourthPattern/cube4.webp',
-        //     '/src/assets/fourthPattern/cube5.webp',
-        //     '/src/assets/fourthPattern/cube6.webp',
-        //   ],
-        //   correct: [3, 4],
-        //   points: 2,
-        // },
+        {
+          //1
+          type: 'select-shape',
+          question: `Vyber ${this.correctShape}, potom klikni na tlačidlo "pokračovať"`,
+          options: [
+            //TODO zatial sa nebere options pri ulohe select-shape
+            'kruh',
+            'štvorec',
+          ],
+          correct: this.correctShape,
+          points: 1,
+        },
+        {
+          //2
+          type: 'j-word',
+          question: 'Vyberte slovo, ktoré začína na písmeno J:',
+          options: ['Hrad', 'List', 'Ruka', 'Meno', 'Voda', 'Dážď', 'Jar', 'Kruh', 'Znak', 'Tvor'],
+          correct: 'Jar',
+          points: 1,
+        },
+        {
+          //3
+          type: 'select-words',
+          question: 'Vyberte slová, ktoré označujú ovocie:',
+          options: this.all4Words,
+          correct: this.fruitsToSelect,
+          points: 1,
+        },
+        {
+          //4
+          type: 'number-write',
+          question: `Zadaj číslo ${this.displayNumber}:`,
+          correct: this.displayNumber,
+          points: 1,
+        },
+        {
+          //5
+          type: 'text-instruction',
+          question: [
+            'Ďalej nasleduje pamäťová úloha.',
+            'Zapamätajte si päť slov.',
+            'Zobrazia sa automaticky na ďalšej strane.',
+            'Sústreď sa!',
+            'Každé slovo uvidíš len na pár sekúnd.',
+            ' Tvojou úlohou je zapamätať si tieto slová.',
+          ],
+          // correct: null,
+          // points: 1,
+        },
+        {
+          //6
+          type: 'text-instruction',
+          question: ['Zapamätaj si slová.', '...Už prichádzajú!...'],
+          // correct: null,
+          // points: 1
+        },
+        {
+          //7
+          type: 'show-words',
+          question: '',
+          correct: this.wordsToMemorize,
+          // points: 1
+        },
+        {
+          //8
+          type: 'text-instruction',
+          question: [
+            ' Zapamätaj si tých päť slov na neskôr.',
+            'Teraz, prosím, odpovedz na niekoľko ďalších otázok.',
+          ],
+          // correct: null,
+          // points: 1
+        },
+        {
+          //9
+          type: 'shape-recall',
+          question: 'Aký tvar ste mali pred chvíľou vybrať?',
+          options: ['Kruh', 'Obdĺžnik', 'Štvorec', 'Trojuholník'],
+          correct: this.correctShape,
+          points: 1,
+        },
+        {
+          //   //10
+          type: 'j-word-recall',
+          question:
+            'Pred chvíľou ste mali vybrať slovo začínajúce určitým písmenom. Vyberte rovnaké slovo znovu:',
+          options: ['Hrad', 'List', 'Ruka', 'Meno', 'Voda', 'Dážď', 'Jar', 'Kruh', 'Znak', 'Tvor'],
+          correct: 'Jar',
+          points: 1,
+        },
+        {
+          //11
+          type: 'number-recall',
+          question:
+            'Keď si prvýkrát videl túto numerickú klávesnicu, musel si zadať konkrétne štvormiestne číslo. Zadaj to isté číslo znova.:',
+          correct: this.displayNumber,
+          points: 1,
+        },
+        {
+          //12
+          type: 'orientation',
+          question: 'Aký je aktuálny mesiac?',
+          options: [
+            'Január',
+            'Február',
+            'Marec',
+            'Apríl',
+            'Máj',
+            'Jún',
+            'Júl',
+            'August',
+            'September',
+            'Október',
+            'November',
+            'December',
+          ],
+          correct: currentMonth.charAt(0).toUpperCase() + currentMonth.slice(1),
+          points: 1,
+        },
+        {
+          //13
+          type: 'orientation',
+          question: 'Aký je aktuálny rok?',
+          options: [
+            (parseInt(currentYear) - 1).toString(),
+            (parseInt(currentYear) - 2).toString(),
+            currentYear,
+            (parseInt(currentYear) + 2).toString(),
+            (parseInt(currentYear) + 1).toString(),
+            (parseInt(currentYear) + 3).toString(),
+          ],
+          correct: currentYear,
+          points: 1,
+        },
+        {
+          //14
+          type: 'orientation',
+          question: 'Aký je dnes deň v týždni?',
+          options: ['Pondelok', 'Utorok', 'Streda', 'Štvrtok', 'Piatok', 'Sobota', 'Nedeľa'],
+          correct: currentDay.charAt(0).toUpperCase() + currentDay.slice(1),
+          points: 1,
+        },
+        {
+          //15
+          type: 'orientation',
+          question: 'V ktorej krajine sa nachádzate?',
+          options: ['Slovensko', 'Česko', 'Poľsko', 'Maďarsko', 'Rakúsko', 'Nemecko'],
+          correct: 'Slovensko',
+          points: 1,
+        },
+        {
+          //16
+          type: 'word-recall',
+          question: 'Predtým ste si mali zapamätať 5 slov. Vybertie tie isté slová zo zoznamu:',
+          options: this.allWords,
+          correct: this.wordsToMemorize,
+          points: 5,
+        },
+        {
+          //17
+          type: 'calculation',
+          question:
+            'Ideš do obchodu s presne 100€. Kúpiš tucet jabĺk za 7€ a trojkolku za 60€. Koľko si minul?',
+          correct: 67,
+          points: 1,
+        },
+        {
+          //18
+          type: 'calculation',
+          question: 'Po tomto nákupe, koľko Vám zostalo peňazí?',
+          correct: 33,
+          points: 1,
+        },
+        {
+          //19
+          type: 'text-instruction',
+          question: [
+            'Ďalej uvidíš niekoľko obrázkov.',
+            'Vyber malé obrázky, z ktorých sa skladá veľký obrázok.',
+          ],
+          correct: '/src/assets/drawingExample.png',
+        },
+        {
+          //20
+          type: 'pattern',
+          question: 'Ktoré malé obrázky tvoria veľký obrázok?',
+          pattern: '/src/assets/firstPattern/shapes-answer.webp',
+          options: [1, 2, 3, 4, 5, 6],
+          src: [
+            '/src/assets/firstPattern/shapes1.webp',
+            '/src/assets/firstPattern/shapes2.webp',
+            '/src/assets/firstPattern/shapes3.webp',
+            '/src/assets/firstPattern/shapes4.webp',
+            '/src/assets/firstPattern/shapes5.webp',
+            '/src/assets/firstPattern/shapes6.webp',
+          ],
+          correct: [1, 5],
+          points: 1,
+        },
+        {
+          //21
+          type: 'pattern',
+          question: 'Ktoré malé obrázky tvoria veľký obrázok?',
+          pattern: '/src/assets/secondPattern/face-answer.webp',
+          options: [1, 2, 3, 4, 5, 6],
+          src: [
+            '/src/assets/secondPattern/face1.webp',
+            '/src/assets/secondPattern/face2.webp',
+            '/src/assets/secondPattern/face3.webp',
+            '/src/assets/secondPattern/face4.webp',
+            '/src/assets/secondPattern/face5.webp',
+            '/src/assets/secondPattern/face6.webp',
+          ],
+          correct: [2, 6],
+          points: 1,
+        },
+        {
+          //22
+          type: 'pattern',
+          question: 'Ktoré malé obrázky tvoria veľký obrázok?',
+          pattern: '/src/assets/thirdPattern/diagonal-line-answer.webp',
+          options: [1, 2, 3, 4, 5, 6],
+          src: [
+            '/src/assets/thirdPattern/diagonal-line1.webp',
+            '/src/assets/thirdPattern/diagonal-line2.webp',
+            '/src/assets/thirdPattern/diagonal-line3.webp',
+            '/src/assets/thirdPattern/diagonal-line4.webp',
+            '/src/assets/thirdPattern/diagonal-line5.webp',
+            '/src/assets/thirdPattern/diagonal-line6.webp',
+          ],
+          correct: [3, 6],
+          points: 1,
+        },
+        {
+          //23
+          type: 'pattern',
+          question: 'Ktoré malé obrázky tvoria veľký obrázok?',
+          pattern: '/src/assets/fourthPattern/cube-answer.webp',
+          options: [1, 2, 3, 4, 5, 6],
+          src: [
+            '/src/assets/fourthPattern/cube1.webp',
+            '/src/assets/fourthPattern/cube2.webp',
+            '/src/assets/fourthPattern/cube3.webp',
+            '/src/assets/fourthPattern/cube4.webp',
+            '/src/assets/fourthPattern/cube5.webp',
+            '/src/assets/fourthPattern/cube6.webp',
+          ],
+          correct: [3, 4],
+          points: 1,
+        },
         {
           //24
           type: 'text-instruction',
@@ -588,6 +591,7 @@ export const useTestStore = defineStore('test', {
           type: 'stroop',
           // question: 'Stroop test: Kliknite na farbu textu',
           question: '',
+          correct: this.currentStroopItem.correct,
 
           points: 4,
         },
@@ -601,18 +605,31 @@ export const useTestStore = defineStore('test', {
           type: 'text-instruction',
           question: [
             'Kreslite čiary od jedného bodu k druhému.',
-            'Bodky s číslami spájaj podľa poradia od najnižšieho po najvyššie (1, 2, 3, …).',
-            ' Bodky s písmenami spájaj v abecednom poradí (A, B, C, …).',
+            'Body s číslami spájaj podľa poradia od najnižšieho po najvyššie (1, 2, 3, …).',
+            ' Body s písmenami spájaj v abecednom poradí (A, B, C, …).',
           ],
         },
         {
           //28
           type: 'text-instruction',
           question: [
-            'Bodky vyzerajú takto:',
-            '… a zafarbia sa nazeleno, keď ich spájaš v správnom poradí:',
-            '… ale bliknú načerveno, ak sa pomýliš v poradí:',
+            'Body sa zafarbia nazeleno, keď ich spájaš v správnom poradí...',
+            '… inak farbue nezmenia, ak sa pomýliš v poradí.',
           ],
+        },
+        {
+          //29
+          type: 'trails',
+          question: 'Pripojte čísla v správnom poradí',
+          sequence: [1, 2, 3, 4, 5, 6, 7, 8],
+          points: 2,
+        },
+        {
+          //30
+          type: 'trails',
+          question: 'Pripojte čísla v správnom poradí',
+          sequence: [1, 'A', 2, 'B', 3, 'C', 4, 'D', 5, 'E'],
+          points: 2,
         },
 
         // {
@@ -624,17 +641,13 @@ export const useTestStore = defineStore('test', {
         //   correct: '⬜',
         //   points: 2,
         // },
-        {
-          type: 'trails',
-          question: 'Trail Making Test: Pripojte čísla v správnom poradí',
-          sequence: [1, 2, 3, 4, 5, 6, 7, 8],
-          points: 3,
-        },
+        // {
+        //   type: 'trails',
+        //   question: 'Trail Making Test: Pripojte čísla v správnom poradí',
+        //   sequence: [1, 2, 3, 4, 5, 6, 7, 8],
+        //   points: 3,
+        // },
       ]
-
-      this.shuffledTrails = [...this.tasks.find((t) => t.type === 'trails').sequence].sort(
-        () => Math.random() - 0.5,
-      )
     },
     toggleWord(word) {
       if (this.answerSubmitted) return
@@ -655,7 +668,7 @@ export const useTestStore = defineStore('test', {
 
     selectStroopColor(color) {
       this.currentAnswer = color
-      this.resetWrongAnswerDialog
+      this.resetWrongAnswerDialog()
     },
 
     handleStroopAnswer() {
@@ -669,6 +682,7 @@ export const useTestStore = defineStore('test', {
       if (this.stroopIndex < this.stroopItems.length - 1) {
         this.stroopIndex++
         this.currentAnswer = null
+        this.currentTaskData.correct = this.currentStroopItem.correct
       } else {
         this.score += this.stroopCorrect
         this.stroopIndex = 0
@@ -686,6 +700,7 @@ export const useTestStore = defineStore('test', {
       if (num === expectedNum) {
         this.trailsSequence.push(num)
       }
+      this.resetWrongAnswerDialog()
     },
 
     nextTask() {
@@ -694,7 +709,7 @@ export const useTestStore = defineStore('test', {
         this.currentTask++
       } else {
         clearInterval(this.timerInterval)
-        this.testStore.stage = 'results'
+        this.stage = 'results'
       }
     },
 
@@ -705,7 +720,7 @@ export const useTestStore = defineStore('test', {
     },
 
     resetTest() {
-      this.testStore.stage = 'intro'
+      this.stage = 'intro'
       this.currentTask = 0
       this.score = 0
       this.timeSpent = 0
@@ -738,12 +753,10 @@ export const useTestStore = defineStore('test', {
       }
     },
 
-    // Vymazať input
     clearInput() {
       this.userInput = ''
     },
 
-    // Vybrať odpoveď (pre multiple choice úlohy)
     selectAnswer(answer) {
       if (!this.answerSubmitted) {
         this.currentAnswer = answer
@@ -751,31 +764,6 @@ export const useTestStore = defineStore('test', {
       this.resetWrongAnswerDialog()
     },
 
-    // // Získať validačnú správu pre tlačidlo
-    // getValidationMessage() {
-    //   console.log('Getting validation message for task:', task)
-    //   const task = this.currentTaskData
-
-    //   if (task.type === 'number-recall') {
-    //     return `Zadajte 4 číslice (${this.userInput.length}/4)`
-    //   }
-    //   if (task.type === 'calculation') {
-    //     return 'Zadajte odpoveď'
-    //   }
-    //   if (task.type === 'word-recall') {
-    //     return `Vyberte 5 slov (${this.selectedWords.length}/5)`
-    //   }
-    //   if (task.type === 'trails') {
-    //     return `Dokončite sekvenciu (${this.trailsSequence.length}/${task.sequence.length})`
-    //   }
-    //   if (['instruction-recall', 'shape-recall', 'orientation', 'pattern'].includes(task.type)) {
-    //     return 'Vyberte odpoveď'
-    //   }
-
-    //   return 'Dokončite úlohu'
-    // },
-
-    // Pokračovať na ďalšiu úlohu
     continueToNext() {
       if (!this.canContinue) {
         console.log('Cannot continue, task not completed:', this.currentTaskData)
@@ -792,7 +780,6 @@ export const useTestStore = defineStore('test', {
           points = task.points
         } else {
           console.log('Wrong answer. Given:', this.currentAnswer, 'Expected:', task.correct)
-          // ✅ Zobraz snackbar
           this.wrongAnswerMessage = `Nesprávna odpoveď! Vybrali ste: "${this.currentAnswer}"`
           this.showWrongAnswerSnackbar = true
           return
@@ -805,13 +792,15 @@ export const useTestStore = defineStore('test', {
           this.showWrongAnswerSnackbar = true
           return
         }
+      } else if (task.type === 'number-recall') {
+        if (this.userInput === task.correct) {
+          points = task.points
+        } else {
+          console.log('Wrong answer. Given:', this.currentAnswer, 'Expected:', task.correct)
+        }
       } else if (task.type === 'calculation') {
         if (Number(this.userInput) === Number(task.correct)) {
           points = task.points
-          // } else {
-          //   this.wrongAnswerMessage = `Nesprávny výsledok! Zadali ste: "${this.userInput}"`
-          //   this.showWrongAnswerSnackbar = true
-          //   return
         }
       } else if (task.type === 'word-recall') {
         const correctCount = this.selectedWords.filter((w) => task.correct.includes(w)).length
@@ -841,13 +830,8 @@ export const useTestStore = defineStore('test', {
         }
       } else if (task.type === 'text-instruction' || task.type === 'show-words') {
         console.log('Text-instruction task, no points awarded.')
-      } else if (
-        task.type === 'j-word-recall' ||
-        task.type === 'shape-recall' ||
-        task.type === 'number-recall' ||
-        task.type === 'orientation'
-      ) {
-        if (this.currentAnswer == task.correct) {
+      } else if (task.type === 'j-word-recall' || task.type === 'shape-recall') {
+        if (this.currentAnswer.toLowerCase() == task.correct.toLowerCase()) {
           points = task.points
         } else {
           console.log('Wrong answer. Given:', this.currentAnswer, 'Expected:', task.correct)
@@ -855,8 +839,13 @@ export const useTestStore = defineStore('test', {
       } else if (task.type === 'stroop') {
         this.handleStroopAnswer()
         return
+      } else if (task.type === 'orientation') {
+        if (this.currentAnswer == task.correct) {
+          points = task.points
+        } else {
+          console.log('Wrong answer. Given:', this.currentAnswer, 'Expected:', task.correct)
+        }
       }
-
       this.score += points
 
       // Reset stavu pre ďalšiu úlohu
