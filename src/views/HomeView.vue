@@ -44,15 +44,17 @@
 
         <v-card elevation="4" class="pa-6" rounded="lg">
           <v-container v-if="testStore.currentTaskData.type === 'text-instruction'">
-            <h1 :class="['mb-4', $vuetify.display.xs ? 'text-h4' : $vuetify.display.sm ? 'text-h3' : 'text-h2']"
-              :key="value" v-for="value in testStore.currentTaskData.question" v-html="value">
+            <h1 class="continueButton" :key="value" v-for="value in testStore.currentTaskData.question" v-html="value">
             </h1>
             <v-img v-if="testStore.currentTaskData.correct" :class="{ inverted: themeStore.theme === 'dark' }"
               :src="testStore.currentTaskData.correct" alt="Ukážka obrázku" />
           </v-container>
 
           <v-container v-else>
-            <h1 :class="$vuetify.display.xs ? 'text-h4' : $vuetify.display.sm ? 'text-h3' : 'text-h2'">
+            <!-- <h1 :class="$vuetify.display.xs ? 'text-h4' : $vuetify.display.sm ? 'text-h3' : 'text-h2'">
+              {{ testStore.currentTaskDataQuestion }}
+            </h1> -->
+            <h1 class="continueButton">
               {{ testStore.currentTaskDataQuestion }}
             </h1>
           </v-container>
@@ -239,8 +241,8 @@
             <!-- Vzorový obrázok hore v strede -->
             <v-row justify="center" class="mb-6">
               <v-col cols="12" sm="8" md="6" lg="4">
-                <v-img :class="{ inverted: themeStore.theme === 'dark' }" :src="testStore.currentTaskData.pattern"
-                  alt="Ukážka obrázku" max-height="200" contain />
+                <v-img :class="{ inverted: themeStore.theme === 'dark' }"
+                  :src="testStore.currentTaskData.images.pattern" alt="Ukážka obrázku" max-height="200" contain />
               </v-col>
             </v-row>
 
@@ -254,11 +256,12 @@
                   :class="{ 'selected-pattern': testStore.currentAnswer && testStore.currentAnswer.includes(option) }"
                   rounded="lg" class="pa-1 cursor-pointer" hover>
                   <v-img :class="{ inverted: themeStore.theme === 'dark' }"
-                    :src="testStore.currentTaskData.src[option - 1]" alt="Option obrázok" max-height="120" contain />
-                  <v-icon v-if="testStore.currentAnswer && testStore.currentAnswer.includes(option)" color="primary"
+                    :src="testStore.currentTaskData.images.src[option - 1]" alt="Option obrázok" max-height="120"
+                    contain />
+                  <!-- <v-icon v-if="testStore.currentAnswer && testStore.currentAnswer.includes(option)" color="primary"
                     size="large" class="position-absolute top-0 right-0 ma-2">
                     mdi-check-circle
-                  </v-icon>
+                  </v-icon> -->
                 </v-card>
               </v-col>
             </v-row>
@@ -267,33 +270,31 @@
 
           <!-- STROOP TEST -->
           <div v-if="testStore.currentTaskDataType === 'stroop'">
-            <!-- <v-alert type="warning" variant="tonal" prominent class="mb-6">
-    <div class="text-h6">
-      <v-icon class="mr-2">mdi-alert</v-icon>
-      Pozor! Kliknite na FARBU textu, nie na to čo je napísané
-    </div>
-  </v-alert> -->
-
-            <v-card elevation="8" class="pa-10 text-center mb-6" rounded="lg" color="grey-lighten-5">
-              <div class="text-h1 font-weight-bold" :style="{ color: testStore.currentStroopItem.color }">
+            <v-card elevation="8" :class="['text-center', 'mb-6', $vuetify.display.xs ? 'pa-3' : 'pa-10']" rounded="lg"
+              color="grey-lighten-5">
+              <div :class="[
+                'font-weight-bold',
+                'stroop-word-responsive'
+              ]" :style="{ color: testStore.currentStroopItem.color }">
                 {{ testStore.currentStroopItem.word }}
               </div>
             </v-card>
 
             <v-row justify="center">
               <v-col v-for="color in testStore.stroopColors" :key="color.name" cols="6" sm="3">
-                <v-btn block size="x-large" :color="testStore.currentAnswer === color.name ? 'primary' : 'default'"
-                  :variant="testStore.currentAnswer === color.name ? 'elevated' : 'outlined'" :style="{
-                    backgroundColor: testStore.currentAnswer === color.name
-                      ? undefined
-                      : (themeStore.theme === 'dark' ? '#333' : '#fff'),
-                    borderColor: testStore.currentAnswer === color.name ? undefined : color.value,
-                    borderWidth: '3px',
-                    borderStyle: 'solid'
-                  }" :disabled="testStore.answerSubmitted" @click="testStore.selectStroopColor(color.name)"
-                  class="text-h6 font-weight-bold stroop-color-btn"
-                  :class="{ 'selected-stroop': testStore.currentAnswer === color.name }" rounded="lg" elevation="4">
-                  <v-icon v-if="testStore.currentAnswer === color.name" class="mr-2">mdi-check-circle</v-icon>
+                <v-btn block :size="$vuetify.display.xs ? 'default' : 'x-large'"
+                  :color="testStore.currentAnswer === color.name ? 'primary' : 'default'"
+                  :variant="testStore.currentAnswer === color.name ? 'elevated' : 'outlined'"
+                  :disabled="testStore.answerSubmitted" @click="testStore.selectStroopColor(color.name)" :class="[
+                    'font-weight-bold',
+                    'stroop-color-btn',
+                    'stroop-btn-responsive',
+                    { 'selected-stroop': testStore.currentAnswer === color.name }
+                  ]" rounded="lg" elevation="4">
+                  <v-icon v-if="testStore.currentAnswer === color.name"
+                    :size="$vuetify.display.xs ? 'x-small' : 'default'" class="mr-1">
+                    mdi-check-circle
+                  </v-icon>
                   {{ color.name.toUpperCase() }}
                 </v-btn>
               </v-col>
@@ -302,43 +303,14 @@
 
 
           <!-- TRAILS TEST -->
-          <!-- <div v-if="testStore.currentTaskDataType === 'trails'">
-            <v-alert type="info" variant="tonal" class="mb-4" prominent>
-              <div class="text-body-1 mb-2">
-                Kliknite na čísla v správnom poradí od najmenšieho po najväčšie
-              </div>
-              <v-progress-linear
-                :model-value="(testStore.trailsSequence.length / testStore.currentTaskData.sequence.length) * 100"
-                color="primary" height="10" rounded class="mt-2" />
-              <div class="text-subtitle-1 mt-2 font-weight-bold">
-                Pokrok: {{ testStore.trailsSequence.length }} / {{ testStore.currentTaskData.sequence.length }}
-              </div>
-            </v-alert>
-
-            <v-card elevation="2" class="pa-4" rounded="lg">
-              <v-row>
-                <v-col v-for="num in testStore.shuffledTrails" :key="num" cols="3" sm="2">
-                  <v-btn block size="x-large" :color="testStore.trailsSequence.includes(num) ? 'success' : 'primary'"
-                    :variant="testStore.trailsSequence.includes(num) ? 'elevated' : 'outlined'"
-                    :disabled="testStore.trailsSequence.includes(num) || testStore.answerSubmitted"
-                    @click="testStore.handleTrailClick(num)" class="text-h4 font-weight-bold"
-                    :class="{ 'completed-trail': testStore.trailsSequence.includes(num) }" rounded="lg">
-                    <v-icon v-if="testStore.trailsSequence.includes(num)" class="position-absolute"
-                      style="top: 4px; right: 4px;" size="small">mdi-check-circle</v-icon>
-                    {{ num }}
-                  </v-btn>
-                </v-col>
-              </v-row>
-            </v-card>
-          </div> -->
           <TrailTestComponent />
 
           <!-- CONTINUE BUTTON -->
           <div v-if="testStore.currentTaskDataType !== 'show-words'">
             <!-- ✅ Alert bez close button, väčší bold text -->
-            <v-alert v-if="testStore.showWrongAnswerSnackbar" type="error" variant="tonal" class="mb-4 mt-4" prominent>
+            <v-alert v-if="testStore.showWrongAnswerSnackbar" type="error" variant="tonal" class="mb-4 mt-4 " prominent>
               <div class="d-flex align-center">
-                <div class="text-h6 font-weight-bold">
+                <div class="continueButton font-weight-bold ">
                   {{ testStore.wrongAnswerMessage }}
                 </div>
               </div>
@@ -346,8 +318,8 @@
 
             <v-row justify="center" class="mt-6">
               <v-col cols="12" sm="8" md="6">
-                <v-btn block size="x-large" color="success" @click="testStore.continueToNext"
-                  class="text-h6 font-weight-bold continue-btn" rounded="pill" :elevation="4">
+                <v-btn block size="x-large" color="success" @click="testStore.continueToNext" class="continueButton"
+                  rounded="pill" :elevation="4">
                   <v-icon class="mr-2">mdi-arrow-right-circle</v-icon>
                   Pokračovať
                 </v-btn>
@@ -364,53 +336,54 @@
         <v-card elevation="8" class="pa-8" rounded="lg">
           <h1 class="mb-4">🎉 Test dokončený!</h1>
           <!-- <p class="text-h6 mb-6">Gratulujeme, úspešne ste dokončili SATURN test</p> -->
+          <div>
+            <v-card color="primary" variant="tonal" class="pa-6 mb-6" rounded="lg">
+              <p class="text-h6">Vaše skóre:</p>
+              <h2 class="text-h2 font-weight-bold my-4">{{ testStore.score }} / 30</h2>
+              <p v-if="testStore.developmentMode" class="text-h5">{{ testStore.scorePercentage }}%</p>
+            </v-card>
 
-          <v-card color="primary" variant="tonal" class="pa-6 mb-6" rounded="lg">
-            <p class="text-h6">Vaše skóre:</p>
-            <h2 class="text-h2 font-weight-bold my-4">{{ testStore.score }} / 30</h2>
-            <p class="text-h5">{{ testStore.scorePercentage }}%</p>
-          </v-card>
+            <v-card v-if="testStore.developmentMode" :color="testStore.interpretation.color" variant="tonal"
+              class="pa-6 mb-6" rounded="lg">
+              <h3 class="text-h4 mb-2">{{ testStore.interpretation.level }}</h3>
+              <p class="text-h6">{{ testStore.interpretation.description }}</p>
+            </v-card>
 
-          <v-card :color="testStore.interpretation.color" variant="tonal" class="pa-6 mb-6" rounded="lg">
-            <h3 class="text-h4 mb-2">{{ testStore.interpretation.level }}</h3>
-            <p class="text-h6">{{ testStore.interpretation.description }}</p>
-          </v-card>
-
-          <v-card elevation="2" class="pa-6 mb-6" rounded="lg">
-            <h3 class="mb-4">📊 Porovnávacia tabuľka:</h3>
-            <v-table>
-              <thead>
-                <tr>
-                  <th>Skóre</th>
-                  <th>Hodnotenie</th>
-                  <th>Popis</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr :class="{ 'bg-green-lighten-4': testStore.score >= 26 }">
-                  <td>26-30</td>
-                  <td class="font-weight-bold text-green">Výborné</td>
-                  <td>Kognitívne funkcie v norme</td>
-                </tr>
-                <tr :class="{ 'bg-blue-lighten-4': testStore.score >= 21 && testStore.score < 26 }">
-                  <td>21-25</td>
-                  <td class="font-weight-bold text-blue">Dobré</td>
-                  <td>Mierne kognitívne zmeny</td>
-                </tr>
-                <tr :class="{ 'bg-orange-lighten-4': testStore.score >= 16 && testStore.score < 21 }">
-                  <td>16-20</td>
-                  <td class="font-weight-bold text-orange">Stredné</td>
-                  <td>Stredné kognitívne zhoršenie</td>
-                </tr>
-                <tr :class="{ 'bg-red-lighten-4': testStore.score < 16 }">
-                  <td>0-15</td>
-                  <td class="font-weight-bold text-red">Nízke</td>
-                  <td>Výrazné kognitívne zhoršenie</td>
-                </tr>
-              </tbody>
-            </v-table>
-          </v-card>
-
+            <v-card v-if="testStore.developmentMode" elevation="2" class="pa-6 mb-6" rounded="lg">
+              <h3 class="mb-4">📊 Porovnávacia tabuľka:</h3>
+              <v-table>
+                <thead>
+                  <tr>
+                    <th>Skóre</th>
+                    <th>Hodnotenie</th>
+                    <th>Popis</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr :class="{ 'bg-green-lighten-4': testStore.score >= 26 }">
+                    <td>26-30</td>
+                    <td class="font-weight-bold text-green">Výborné</td>
+                    <td>Kognitívne funkcie v norme</td>
+                  </tr>
+                  <tr :class="{ 'bg-blue-lighten-4': testStore.score >= 21 && testStore.score < 26 }">
+                    <td>21-25</td>
+                    <td class="font-weight-bold text-blue">Dobré</td>
+                    <td>Mierne kognitívne zmeny</td>
+                  </tr>
+                  <tr :class="{ 'bg-orange-lighten-4': testStore.score >= 16 && testStore.score < 21 }">
+                    <td>16-20</td>
+                    <td class="font-weight-bold text-orange">Stredné</td>
+                    <td>Stredné kognitívne zhoršenie</td>
+                  </tr>
+                  <tr :class="{ 'bg-red-lighten-4': testStore.score < 16 }">
+                    <td>0-15</td>
+                    <td class="font-weight-bold text-red">Nízke</td>
+                    <td>Výrazné kognitívne zhoršenie</td>
+                  </tr>
+                </tbody>
+              </v-table>
+            </v-card>
+          </div>
           <v-alert type="info" variant="tonal" class="mb-6">
             <p><strong>⏱️ Čas testovania:</strong> {{ testStore.formatTime(testStore.timeSpent) }}</p>
             <p class="mt-2">
@@ -474,6 +447,7 @@ export default {
 <style scoped>
 ::v-deep(.rainbow) {
   background: linear-gradient(90deg, red, green, blue);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: bold;

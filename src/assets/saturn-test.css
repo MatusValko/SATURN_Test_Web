@@ -33,16 +33,6 @@ h1 {
   animation: fadeIn 0.5s ease-in;
 }
 
-/* .intro-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 100vh;
-  padding: 4rem;
-  overflow: hidden;
-  position: relative;
-} */
-
 .memorize-container {
   max-width: 800px;
   margin: 0 auto;
@@ -135,6 +125,45 @@ h1 {
 
 .v-btn:not(:disabled):active {
   transform: translateY(-1px);
+}
+
+/* === SHAPE SELECTOR === */
+.shape-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 140px;
+}
+
+.shape-card:hover {
+  transform: translateY(-8px);
+}
+
+.shape-container {
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 150px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+
+.circle {
+  width: 100%;
+  height: 100%;
+  max-width: 120px;
+  max-height: 120px;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+}
+
+.square {
+  width: 100%;
+  height: 100%;
+  max-width: 120px;
+  max-height: 120px;
+  transition: background-color 0.3s ease;
 }
 
 /* === PROGRESS BAR === */
@@ -745,6 +774,58 @@ li:before {
   }
 }
 
+/* Mobilné zariadenia - Shape Selector */
+@media (max-width: 600px) {
+  .shape-container {
+    max-width: 100px;
+    padding: 5px;
+  }
+
+  .circle,
+  .square {
+    max-width: 80px;
+    max-height: 80px;
+  }
+
+  .shape-card {
+    min-height: 100px;
+  }
+}
+
+/* Veľmi malé mobily - Shape Selector */
+@media (max-width: 360px) {
+  .shape-container {
+    max-width: 80px;
+  }
+
+  .circle,
+  .square {
+    max-width: 60px;
+    max-height: 60px;
+  }
+
+  .shape-card {
+    min-height: 80px;
+  }
+}
+
+/* Tablety a väčšie - Shape Selector */
+@media (min-width: 960px) {
+  .shape-container {
+    max-width: 180px;
+  }
+
+  .circle,
+  .square {
+    max-width: 150px;
+    max-height: 150px;
+  }
+
+  .shape-card {
+    min-height: 180px;
+  }
+}
+
 @media (max-width: 480px) {
   .header-info {
     flex-direction: column;
@@ -767,30 +848,74 @@ li:before {
     font-size: 1.4em;
     padding: 20px;
   }
+}
 
-  /* 🌈 animované alebo cyklické farby */
-  /* .rainbow span:nth-child(1) {
-    color: red;
-  }
-  .rainbow span:nth-child(2) {
-    color: green;
-  }
-  .rainbow span:nth-child(3) {
-    color: blue;
-  }
-  .rainbow span:nth-child(4) {
-    color: red;
-  }
-  .rainbow span:nth-child(5) {
-    color: green;
-  } */
-  /* .rainbow {
-    display: inline-block;
-    background: linear-gradient(90deg, red, green, blue, red);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: bold;
-  } */
+/* Stroop word responzívne veľkosti */
+.stroop-word-responsive {
+  font-size: 4rem; /* Desktop */
+}
 
-  /* NUMBER RECALL INPUT CENTERING */
+@media (max-width: 960px) {
+  .stroop-word-responsive {
+    font-size: 3rem; /* Tablet */
+  }
+}
+
+@media (max-width: 600px) {
+  .stroop-word-responsive {
+    font-size: 2.5rem; /* Mobile */
+  }
+}
+
+@media (max-width: 400px) {
+  .stroop-word-responsive {
+    font-size: 2rem; /* Malé mobily */
+  }
+}
+
+@media (max-width: 300px) {
+  .stroop-word-responsive {
+    font-size: 1rem; /* Veľmi malé mobily */
+  }
+}
+
+@media (max-width: 250px) {
+  .stroop-word-responsive {
+    font-size: 0.8rem; /* Veľmi malé mobily */
+  }
+}
+
+/* Stroop word responzívne veľkosti */
+.continueButton {
+  font-size: 1.6rem; /* Desktop */
+}
+
+@media (max-width: 960px) {
+  .continueButton {
+    font-size: 1.5rem; /* Tablet */
+  }
+}
+
+@media (max-width: 600px) {
+  .continueButton {
+    font-size: 1rem; /* Mobile */
+  }
+}
+
+@media (max-width: 400px) {
+  .continueButton {
+    font-size: 0.7rem; /* Malé mobily */
+  }
+}
+
+@media (max-width: 300px) {
+  .continueButton {
+    font-size: 0.7rem; /* Veľmi malé mobily */
+  }
+}
+
+@media (max-width: 250px) {
+  .continueButton {
+    font-size: 0.4rem; /* Veľmi malé mobily */
+  }
 }

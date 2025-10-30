@@ -1,4 +1,33 @@
 import { defineStore } from 'pinia'
+import drawingExample from '@/assets/drawingExample.png'
+import firstPatternAnswer from '@/assets/firstPattern/shapes-answer.webp'
+import shapes1 from '@/assets/firstPattern/shapes1.webp'
+import shapes2 from '@/assets/firstPattern/shapes2.webp'
+import shapes3 from '@/assets/firstPattern/shapes3.webp'
+import shapes4 from '@/assets/firstPattern/shapes4.webp'
+import shapes5 from '@/assets/firstPattern/shapes5.webp'
+import shapes6 from '@/assets/firstPattern/shapes6.webp'
+import secondPatternAnswer from '@/assets/secondPattern/face-answer.webp'
+import face1 from '@/assets/secondPattern/face1.webp'
+import face2 from '@/assets/secondPattern/face2.webp'
+import face3 from '@/assets/secondPattern/face3.webp'
+import face4 from '@/assets/secondPattern/face4.webp'
+import face5 from '@/assets/secondPattern/face5.webp'
+import face6 from '@/assets/secondPattern/face6.webp'
+import thirdPatternAnswer from '@/assets/thirdPattern/diagonal-line-answer.webp'
+import diagonal1 from '@/assets/thirdPattern/diagonal-line1.webp'
+import diagonal2 from '@/assets/thirdPattern/diagonal-line2.webp'
+import diagonal3 from '@/assets/thirdPattern/diagonal-line3.webp'
+import diagonal4 from '@/assets/thirdPattern/diagonal-line4.webp'
+import diagonal5 from '@/assets/thirdPattern/diagonal-line5.webp'
+import diagonal6 from '@/assets/thirdPattern/diagonal-line6.webp'
+import fourthPatternAnswer from '@/assets/fourthPattern/cube-answer.webp'
+import cube1 from '@/assets/fourthPattern/cube1.webp'
+import cube2 from '@/assets/fourthPattern/cube2.webp'
+import cube3 from '@/assets/fourthPattern/cube3.webp'
+import cube4 from '@/assets/fourthPattern/cube4.webp'
+import cube5 from '@/assets/fourthPattern/cube5.webp'
+import cube6 from '@/assets/fourthPattern/cube6.webp'
 
 export const useTestStore = defineStore('test', {
   state: () => ({
@@ -24,7 +53,7 @@ export const useTestStore = defineStore('test', {
     displayNumber: '1239',
     fruitsToSelect: ['BANÁN', 'POMARANČ'],
     wordsToMemorize: ['JABLKO', 'PERO', 'KRAVATA', 'DOM', 'AUTO'],
-    wordsToMemorizeInterval: 100,
+    wordsToMemorizeInterval: 4000,
     stroopIndex: 0,
     stroopCorrect: 0,
     stroopItems: [
@@ -155,6 +184,27 @@ export const useTestStore = defineStore('test', {
     ],
 
     tasks: [],
+    drawingExampleImage: drawingExample,
+    firstPattern: {
+      pattern: firstPatternAnswer,
+      src: [shapes1, shapes2, shapes3, shapes4, shapes5, shapes6],
+    },
+
+    // added: second, third and fourth pattern entries
+    secondPattern: {
+      pattern: secondPatternAnswer,
+      src: [face1, face2, face3, face4, face5, face6],
+    },
+
+    thirdPattern: {
+      pattern: thirdPatternAnswer,
+      src: [diagonal1, diagonal2, diagonal3, diagonal4, diagonal5, diagonal6],
+    },
+
+    fourthPattern: {
+      pattern: fourthPatternAnswer,
+      src: [cube1, cube2, cube3, cube4, cube5, cube6],
+    },
   }),
   getters: {
     getIcon: (state) => (state.theme === 'light' ? 'mdi-weather-sunny' : 'mdi-weather-night'),
@@ -327,6 +377,35 @@ export const useTestStore = defineStore('test', {
       const currentDay = new Date().toLocaleString('sk-SK', { weekday: 'long' })
 
       this.tasks = [
+        /**
+         * Simple
+         * Attention:
+         * Points: 6
+         *
+         * Orientation:
+         * Points: 4
+         *
+         * Memory Five Words:
+         * Points: 5
+         *
+         * Memory Incidental:
+         * Points: 3
+         *
+         * Math:
+         * Points: 3
+         *
+         * Image Matching:
+         * Points: 4
+         *
+         * Stroop:
+         * Points: 3
+         *
+         * Mini Trails A
+         * Points: 1
+         * Mini Trails B:
+         * Points: 1
+         *
+         * **/
         {
           //1
           type: 'select-shape',
@@ -337,7 +416,7 @@ export const useTestStore = defineStore('test', {
             'štvorec',
           ],
           correct: this.correctShape,
-          points: 1,
+          points: 0,
         },
         {
           //2
@@ -345,7 +424,7 @@ export const useTestStore = defineStore('test', {
           question: 'Vyberte slovo, ktoré začína na písmeno J:',
           options: ['Hrad', 'List', 'Ruka', 'Meno', 'Voda', 'Dážď', 'Jar', 'Kruh', 'Znak', 'Tvor'],
           correct: 'Jar',
-          points: 1,
+          points: 2,
         },
         {
           //3
@@ -353,14 +432,14 @@ export const useTestStore = defineStore('test', {
           question: 'Vyberte slová, ktoré označujú ovocie:',
           options: this.all4Words,
           correct: this.fruitsToSelect,
-          points: 1,
+          points: 2,
         },
         {
           //4
           type: 'number-write',
           question: `Zadaj číslo ${this.displayNumber}:`,
           correct: this.displayNumber,
-          points: 1,
+          points: 2,
         },
         {
           //5
@@ -498,7 +577,7 @@ export const useTestStore = defineStore('test', {
           type: 'calculation',
           question: 'Po tomto nákupe, koľko Vám zostalo peňazí?',
           correct: 33,
-          points: 1,
+          points: 2,
         },
         {
           //19
@@ -507,22 +586,23 @@ export const useTestStore = defineStore('test', {
             'Ďalej uvidíš niekoľko obrázkov.',
             'Vyber malé obrázky, z ktorých sa skladá veľký obrázok.',
           ],
-          correct: '/src/assets/drawingExample.png',
+          correct: this.drawingExampleImage,
         },
         {
           //20
           type: 'pattern',
           question: 'Ktoré malé obrázky tvoria veľký obrázok?',
-          pattern: '/src/assets/firstPattern/shapes-answer.webp',
           options: [1, 2, 3, 4, 5, 6],
-          src: [
-            '/src/assets/firstPattern/shapes1.webp',
-            '/src/assets/firstPattern/shapes2.webp',
-            '/src/assets/firstPattern/shapes3.webp',
-            '/src/assets/firstPattern/shapes4.webp',
-            '/src/assets/firstPattern/shapes5.webp',
-            '/src/assets/firstPattern/shapes6.webp',
-          ],
+          images: this.firstPattern,
+          // pattern: '/src/assets/firstPattern/shapes-answer.webp',
+          // src: [
+          //   '/src/assets/firstPattern/shapes1.webp',
+          //   '/src/assets/firstPattern/shapes2.webp',
+          //   '/src/assets/firstPattern/shapes3.webp',
+          //   '/src/assets/firstPattern/shapes4.webp',
+          //   '/src/assets/firstPattern/shapes5.webp',
+          //   '/src/assets/firstPattern/shapes6.webp',
+          // ],
           correct: [1, 5],
           points: 1,
         },
@@ -530,16 +610,17 @@ export const useTestStore = defineStore('test', {
           //21
           type: 'pattern',
           question: 'Ktoré malé obrázky tvoria veľký obrázok?',
-          pattern: '/src/assets/secondPattern/face-answer.webp',
           options: [1, 2, 3, 4, 5, 6],
-          src: [
-            '/src/assets/secondPattern/face1.webp',
-            '/src/assets/secondPattern/face2.webp',
-            '/src/assets/secondPattern/face3.webp',
-            '/src/assets/secondPattern/face4.webp',
-            '/src/assets/secondPattern/face5.webp',
-            '/src/assets/secondPattern/face6.webp',
-          ],
+          images: this.secondPattern,
+          // pattern: '/src/assets/secondPattern/face-answer.webp',
+          // src: [
+          //   '/src/assets/secondPattern/face1.webp',
+          //   '/src/assets/secondPattern/face2.webp',
+          //   '/src/assets/secondPattern/face3.webp',
+          //   '/src/assets/secondPattern/face4.webp',
+          //   '/src/assets/secondPattern/face5.webp',
+          //   '/src/assets/secondPattern/face6.webp',
+          // ],
           correct: [2, 6],
           points: 1,
         },
@@ -547,16 +628,17 @@ export const useTestStore = defineStore('test', {
           //22
           type: 'pattern',
           question: 'Ktoré malé obrázky tvoria veľký obrázok?',
-          pattern: '/src/assets/thirdPattern/diagonal-line-answer.webp',
           options: [1, 2, 3, 4, 5, 6],
-          src: [
-            '/src/assets/thirdPattern/diagonal-line1.webp',
-            '/src/assets/thirdPattern/diagonal-line2.webp',
-            '/src/assets/thirdPattern/diagonal-line3.webp',
-            '/src/assets/thirdPattern/diagonal-line4.webp',
-            '/src/assets/thirdPattern/diagonal-line5.webp',
-            '/src/assets/thirdPattern/diagonal-line6.webp',
-          ],
+          images: this.thirdPattern,
+          // pattern: '/src/assets/thirdPattern/diagonal-line-answer.webp',
+          // src: [
+          //   '/src/assets/thirdPattern/diagonal-line1.webp',
+          //   '/src/assets/thirdPattern/diagonal-line2.webp',
+          //   '/src/assets/thirdPattern/diagonal-line3.webp',
+          //   '/src/assets/thirdPattern/diagonal-line4.webp',
+          //   '/src/assets/thirdPattern/diagonal-line5.webp',
+          //   '/src/assets/thirdPattern/diagonal-line6.webp',
+          // ],
           correct: [3, 6],
           points: 1,
         },
@@ -564,16 +646,17 @@ export const useTestStore = defineStore('test', {
           //23
           type: 'pattern',
           question: 'Ktoré malé obrázky tvoria veľký obrázok?',
-          pattern: '/src/assets/fourthPattern/cube-answer.webp',
           options: [1, 2, 3, 4, 5, 6],
-          src: [
-            '/src/assets/fourthPattern/cube1.webp',
-            '/src/assets/fourthPattern/cube2.webp',
-            '/src/assets/fourthPattern/cube3.webp',
-            '/src/assets/fourthPattern/cube4.webp',
-            '/src/assets/fourthPattern/cube5.webp',
-            '/src/assets/fourthPattern/cube6.webp',
-          ],
+          images: this.fourthPattern,
+          // pattern: '/src/assets/fourthPattern/cube-answer.webp',
+          // src: [
+          //   '/src/assets/fourthPattern/cube1.webp',
+          //   '/src/assets/fourthPattern/cube2.webp',
+          //   '/src/assets/fourthPattern/cube3.webp',
+          //   '/src/assets/fourthPattern/cube4.webp',
+          //   '/src/assets/fourthPattern/cube5.webp',
+          //   '/src/assets/fourthPattern/cube6.webp',
+          // ],
           correct: [3, 4],
           points: 1,
         },
@@ -585,15 +668,13 @@ export const useTestStore = defineStore('test', {
             'Vyberte <span class="rainbow">FARBU</span>, ktorou je každé slovo napísané.',
           ],
         },
-
         {
           //25
           type: 'stroop',
           // question: 'Stroop test: Kliknite na farbu textu',
           question: '',
           correct: this.currentStroopItem.correct,
-
-          points: 4,
+          points: 3,
         },
         {
           //26
@@ -614,7 +695,7 @@ export const useTestStore = defineStore('test', {
           type: 'text-instruction',
           question: [
             'Body sa zafarbia nazeleno, keď ich spájaš v správnom poradí...',
-            '… inak farbue nezmenia, ak sa pomýliš v poradí.',
+            '… inak sa farby nezmenia, ak sa pomýliš v poradí.',
           ],
         },
         {
@@ -622,31 +703,15 @@ export const useTestStore = defineStore('test', {
           type: 'trails',
           question: 'Pripojte čísla v správnom poradí',
           sequence: [1, 2, 3, 4, 5, 6, 7, 8],
-          points: 2,
+          points: 1,
         },
         {
           //30
           type: 'trails',
           question: 'Pripojte čísla v správnom poradí',
-          sequence: [1, 'A', 2, 'B', 3, 'C', 4, 'D', 5, 'E'],
-          points: 2,
+          sequence: [1, 'A', 2, 'B', 3, 'C', 4, 'D'],
+          points: 1,
         },
-
-        // {
-        //   type: 'pattern',
-        //   question:
-        //     'Ďalej uvidíš niekoľko obrázkov. Vyber malé obrázky, z ktorých sa skladá veľký obrázok.',
-        //   pattern: ['⬜', '⬛', '⬜', '⬛', '?'],
-        //   options: ['⬜', '⬛', '🔲', '🔳'],
-        //   correct: '⬜',
-        //   points: 2,
-        // },
-        // {
-        //   type: 'trails',
-        //   question: 'Trail Making Test: Pripojte čísla v správnom poradí',
-        //   sequence: [1, 2, 3, 4, 5, 6, 7, 8],
-        //   points: 3,
-        // },
       ]
     },
     toggleWord(word) {
@@ -674,9 +739,16 @@ export const useTestStore = defineStore('test', {
     handleStroopAnswer() {
       if (this.currentAnswer === this.currentStroopItem.correct) {
         console.log('stroop correct')
-        this.stroopCorrect++
+        // this.stroopCorrect++
       } else {
-        console.log('stroop INcorrect')
+        this.currentTaskData.points -= 1
+        if (this.currentTaskData.points < 0) {
+          this.currentTaskData.points = 0
+        }
+        console.log('stroop INcorrect, current task points: ', this.currentTaskData.points)
+        this.wrongAnswerMessage = `Nesprávna odpoveď! Vybrali ste nesprávnu farbu textu!`
+        this.showWrongAnswerSnackbar = true
+        return
       }
 
       if (this.stroopIndex < this.stroopItems.length - 1) {
@@ -684,7 +756,7 @@ export const useTestStore = defineStore('test', {
         this.currentAnswer = null
         this.currentTaskData.correct = this.currentStroopItem.correct
       } else {
-        this.score += this.stroopCorrect
+        this.score += this.currentTaskData.points
         this.stroopIndex = 0
         this.stroopCorrect = 0
         this.currentAnswer = null
@@ -699,6 +771,9 @@ export const useTestStore = defineStore('test', {
 
       if (num === expectedNum) {
         this.trailsSequence.push(num)
+      } else {
+        task.points = 0
+        console.log('Wrong answer. Setting points to 0. Points for this task:', task.points)
       }
       this.resetWrongAnswerDialog()
     },
@@ -774,12 +849,23 @@ export const useTestStore = defineStore('test', {
 
       const task = this.currentTaskData
       let points = 0
-
-      if (['instruction-recall', 'select-shape', 'j-word'].includes(task.type)) {
+      if (['instruction-recall', 'select-shape'].includes(task.type)) {
         if (this.currentAnswer === task.correct) {
           points = task.points
         } else {
           console.log('Wrong answer. Given:', this.currentAnswer, 'Expected:', task.correct)
+          points = 0
+          this.wrongAnswerMessage = `Nesprávna odpoveď! Vybrali ste: "${this.currentAnswer}"`
+          this.showWrongAnswerSnackbar = true
+          return
+        }
+      } else if (['j-word'].includes(task.type)) {
+        if (this.currentAnswer === task.correct) {
+          points = task.points
+        } else {
+          console.log('Wrong answer. Given:', this.currentAnswer, 'Expected:', task.correct)
+          task.points = 0
+          points = 0
           this.wrongAnswerMessage = `Nesprávna odpoveď! Vybrali ste: "${this.currentAnswer}"`
           this.showWrongAnswerSnackbar = true
           return
@@ -788,6 +874,8 @@ export const useTestStore = defineStore('test', {
         if (this.userInput === task.correct) {
           points = task.points
         } else {
+          task.points = 0
+          points = task.points
           this.wrongAnswerMessage = `Nesprávne číslo! Zadali ste: "${this.userInput}"`
           this.showWrongAnswerSnackbar = true
           return
@@ -797,6 +885,8 @@ export const useTestStore = defineStore('test', {
           points = task.points
         } else {
           console.log('Wrong answer. Given:', this.currentAnswer, 'Expected:', task.correct)
+          task.points = 0
+          points = 0
         }
       } else if (task.type === 'calculation') {
         if (Number(this.userInput) === Number(task.correct)) {
@@ -811,15 +901,22 @@ export const useTestStore = defineStore('test', {
           this.showWrongAnswerSnackbar = true
           return
         }
-        const correctCount = this.selectedWords.filter((w) => task.correct.includes(w)).length
-        points = correctCount
+        // only if all correct pictures are selected award full points, otherwise show error
+        const allCorrectSelected = task.correct.every((c) => this.selectedWords.includes(c))
+        if (allCorrectSelected) {
+          points = task.points
+        } else {
+          points = 0
+        }
       } else if (task.type === 'select-words') {
         if (
           this.selectedWords.every((word) => task.correct.includes(word)) &&
           this.selectedWords.length === task.correct.length
         ) {
-          points = task.correct.length
+          points = task.points
         } else {
+          task.points = 0
+          points = task.points
           this.wrongAnswerMessage = `Na pokračovanie musíš vybrať obe slová označujúce ovocie`
           this.showWrongAnswerSnackbar = true
           return
