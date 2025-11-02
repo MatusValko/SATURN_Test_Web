@@ -78,6 +78,56 @@ export const useTestStore = defineStore('test', {
       { name: 'modrá', hex: '#2196f3' },
       { name: 'zelená', hex: '#4caf50' },
     ],
+    countries: [
+      'ALBÁNSKO',
+      'ANDORRA',
+      'BIELORUSKO',
+      'BOSNA A HERCEGOVINA',
+      'BELGICKO',
+      'BULHARSKO',
+      'CYPRUS',
+      'ČESKO',
+      'ČIERNA HORA',
+      'DÁNSKO',
+      'ESTONSKO',
+      'FINSKO',
+      'FRANCÚZSKO',
+      'GRECKO',
+      'GRUZÍNSKO',
+      'HOLANDSKO',
+      'CHORVÁTSKO',
+      'IRSKO',
+      'ISLAND',
+      'KOSOVO',
+      'LICHTENŠTAJNSKO',
+      'LITVA',
+      'LOTYŠSKO',
+      'LUXEMBURSKO',
+      'MAĎARSKO',
+      'MALTA',
+      'MOLDAVSKO',
+      'MONAKO',
+      'POĽSKO',
+      'NEMECKO',
+      'PORTUGALSKO',
+      'NÓRSKO',
+      'RAKÚSKO',
+      'RUMUNSKO',
+      'RUSKO',
+      'SAN MARINO',
+      'SEVERNÉ MACEDÓNSKO',
+      'SLOVENSKO',
+      'SLOVINSKO',
+      'SPOJENÉ KRÁĽOVSTVO',
+      'SRBSKO',
+      'ŠPANIELSKO',
+      'ŠVAJČIARSKO',
+      'TURECKO',
+      'ŠVÉDSKO',
+      'TALIANSKO',
+      'UKRAJINA',
+      'VATIKÁN',
+    ],
 
     trailsSequence: [],
     all4Words: ['BANÁN', 'KOSTOL', 'POMARANČ', 'SPONKA'],
@@ -351,6 +401,9 @@ export const useTestStore = defineStore('test', {
       console.log('Tasks:', this.testStore.tasks)
       console.log('Getter result:', this.testStore.currentTaskDataType)
     },
+    sortWordsAlphabetically() {
+      this.allWords.sort((a, b) => a.localeCompare(b))
+    },
     resetWrongAnswerDialog() {
       if (this.showWrongAnswerSnackbar) {
         this.showWrongAnswerSnackbar = false
@@ -366,6 +419,7 @@ export const useTestStore = defineStore('test', {
     startTest() {
       this.stage = 'test'
       this.initializeTasks()
+      this.sortWordsAlphabetically()
       this.startTime = Date.now()
       this.timerInterval = setInterval(() => {
         this.timeSpent = Math.floor((Date.now() - this.startTime) / 1000)
@@ -527,16 +581,16 @@ export const useTestStore = defineStore('test', {
         },
         {
           //13
-          type: 'orientation',
+          type: 'number-recall',
           question: 'Aký je aktuálny rok?',
-          options: [
-            (parseInt(currentYear) - 1).toString(),
-            (parseInt(currentYear) - 2).toString(),
-            currentYear,
-            (parseInt(currentYear) + 2).toString(),
-            (parseInt(currentYear) + 1).toString(),
-            (parseInt(currentYear) + 3).toString(),
-          ],
+          // options: [
+          //   (parseInt(currentYear) - 1).toString(),
+          //   (parseInt(currentYear) - 2).toString(),
+          //   currentYear,
+          //   (parseInt(currentYear) + 2).toString(),
+          //   (parseInt(currentYear) + 1).toString(),
+          //   (parseInt(currentYear) + 3).toString(),
+          // ],
           correct: currentYear,
           points: 1,
         },
@@ -552,7 +606,7 @@ export const useTestStore = defineStore('test', {
           //15
           type: 'orientation',
           question: 'V ktorej krajine sa nachádzate?',
-          options: ['Slovensko', 'Česko', 'Poľsko', 'Maďarsko', 'Rakúsko', 'Nemecko'],
+          options: this.countries,
           correct: 'Slovensko',
           points: 1,
         },
@@ -937,10 +991,20 @@ export const useTestStore = defineStore('test', {
         this.handleStroopAnswer()
         return
       } else if (task.type === 'orientation') {
-        if (this.currentAnswer == task.correct) {
-          points = task.points
+        if (typeof this.currentAnswer === 'string' && typeof task.correct === 'string') {
+          if (this.currentAnswer.toLowerCase() === task.correct.toLowerCase()) {
+            points = task.points
+            console.log('Correct answer. Given:', this.currentAnswer, 'Expected:', task.correct)
+          } else {
+            console.log('Wrong answer. Given:', this.currentAnswer, 'Expected:', task.correct)
+          }
         } else {
-          console.log('Wrong answer. Given:', this.currentAnswer, 'Expected:', task.correct)
+          if (this.currentAnswer == task.correct) {
+            points = task.points
+            console.log('Correct answer. Given:', this.currentAnswer, 'Expected:', task.correct)
+          } else {
+            console.log('Wrong answer. Given:', this.currentAnswer, 'Expected:', task.correct)
+          }
         }
       }
       this.score += points

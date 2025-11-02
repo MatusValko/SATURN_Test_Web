@@ -64,6 +64,24 @@
           <!-- Circle/Square-->
           <TheCircleSquareComponent />
 
+          <!-- FIRST LETTER WORD/INSTRUCTION/SHAPE/ORIENTATION RECALL -->
+          <div
+            v-if="['instruction-recall', 'shape-recall', 'orientation', 'j-word', 'j-word-recall'].includes(this.testStore.currentTaskDataType)">
+            <v-row>
+              <v-col v-for="option in testStore.currentTaskData.options" :key="option" cols="12" sm="6" md="4" lg="4">
+                <v-btn block size="large" :color="testStore.currentAnswer === option ? 'primary' : 'default'"
+                  :variant="testStore.currentAnswer === option ? 'elevated' : 'outlined'"
+                  :disabled="testStore.answerSubmitted" @click="testStore.selectAnswer(option)" class="text-body-1 pa-6"
+                  :class="{ 'selected-answer': testStore.currentAnswer === option }" rounded="lg">
+                  <v-icon v-if="testStore.currentAnswer === option" class="mr-2">
+                    mdi-check-circle
+                  </v-icon>
+                  {{ option }}
+                </v-btn>
+              </v-col>
+            </v-row>
+          </div>
+
           <!--SELECT WORDS -->
           <transition>
             <v-container v-if="testStore.currentTaskData.type === 'select-words'">
@@ -78,12 +96,12 @@
               </v-alert>
               <v-card elevation="2" class="pa-4" rounded="lg" style="max-height: 500px; overflow-y: auto;">
                 <v-row dense>
-                  <v-col v-for="word in testStore.currentTaskData.options" :key="word" cols="6" sm="4" md="3">
-                    <v-btn block size="small" :color="testStore.selectedWords.includes(word) ? 'secondary' : 'default'"
+                  <v-col v-for="word in testStore.currentTaskData.options" :key="word" cols="12" sm="6" md="4" lg="6">
+                    <v-btn block size="large" :color="testStore.selectedWords.includes(word) ? 'primary' : 'default'"
                       :variant="testStore.selectedWords.includes(word) ? 'elevated' : 'outlined'"
                       :disabled="testStore.answerSubmitted" @click="testStore.toggleWord(word)" class="text-caption"
-                      :class="{ 'selected-word': testStore.selectedWords.includes(word) }" rounded="lg">
-                      <v-icon v-if="testStore.selectedWords.includes(word)" size="small" class="mr-1">mdi-check</v-icon>
+                      :class="{ 'selected-answer': testStore.selectedWords.includes(word) }" rounded="lg">
+                      <v-icon v-if="testStore.selectedWords.includes(word)" class="mr-2">mdi-check</v-icon>
                       {{ word }}
                     </v-btn>
                   </v-col>
@@ -171,21 +189,7 @@
             </v-card>
           </div>
 
-          <!-- FIRST LETTER WORD/INSTRUCTION/SHAPE/ORIENTATION RECALL -->
-          <div
-            v-if="['instruction-recall', 'shape-recall', 'orientation', 'j-word', 'j-word-recall'].includes(this.testStore.currentTaskDataType)">
-            <v-row>
-              <v-col v-for="option in testStore.currentTaskData.options" :key="option" cols="12" sm="6" md="2.4">
-                <v-btn block size="large" :color="testStore.currentAnswer === option ? 'primary' : 'default'"
-                  :variant="testStore.currentAnswer === option ? 'elevated' : 'outlined'"
-                  :disabled="testStore.answerSubmitted" @click="testStore.selectAnswer(option)" class="text-body-1 pa-6"
-                  :class="{ 'selected-answer': testStore.currentAnswer === option }" rounded="lg">
-                  <v-icon v-if="testStore.currentAnswer === option" class="mr-2">mdi-check-circle</v-icon>
-                  {{ option }}
-                </v-btn>
-              </v-col>
-            </v-row>
-          </div>
+
 
 
           <ShowWordsComponent />
